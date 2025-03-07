@@ -7,14 +7,15 @@ import ch.csnc.payload.PayloadsTableModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 
 public class PayloadsTab extends JPanel {
     public final String TAB_TITLE = "Payloads";
     private final PayloadsTableModel payloadsTableModel;
     private final MontoyaApi montoyaApi;
-    private JDialog dialog;
     private final Frame suiteFrame;
+    JTable table;
+    private JDialog dialog;
 
     public PayloadsTab(MontoyaApi montoyaApi, PayloadsTableModel payloadsTableModel) {
         this.payloadsTableModel = payloadsTableModel;
@@ -59,7 +60,7 @@ public class PayloadsTab extends JPanel {
             int confirm = JOptionPane.showOptionDialog(suiteFrame, "Delete selected payload?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (confirm == JOptionPane.YES_OPTION) {
                 for (int selectionIndex = selectedRows.length - 1; selectionIndex >= 0; selectionIndex--) {
-                    payloadsTableModel.remove(payloadsTableModel.get(selectedRows[selectionIndex]));
+                    payloadsTableModel.remove(selectedRows[selectionIndex]);
                 }
             }
         }
@@ -71,8 +72,6 @@ public class PayloadsTab extends JPanel {
     }
 
     private void showAddDialog() {
-
-
         JDialog dialog = new JDialog(suiteFrame, "Add new payload", true);
         dialog.setSize(400, 300);
         dialog.setLocationRelativeTo(suiteFrame);
@@ -140,10 +139,10 @@ public class PayloadsTab extends JPanel {
         dialog.setVisible(true);
     }
 
-    JTable table;
     private JScrollPane createTablePanel() {
         table = new JTable(payloadsTableModel);
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setAutoCreateRowSorter(true);
 
         return new JScrollPane(table);
     }

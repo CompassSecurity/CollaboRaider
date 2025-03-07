@@ -82,6 +82,8 @@ public class InteractionsTab extends JSplitPane {
             }
         };
 
+        table.setAutoCreateRowSorter(true);
+
         return new JScrollPane(table);
     }
 }
