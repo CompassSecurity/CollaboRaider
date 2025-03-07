@@ -9,7 +9,9 @@ import burp.api.montoya.http.message.responses.HttpResponse;
 import burp.api.montoya.proxy.ProxyHttpRequestResponse;
 import ch.csnc.payload.PayloadType;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Pingback {
@@ -53,5 +55,30 @@ public class Pingback {
                 }
             }
         }
+    }
+
+    public String getLocalTimestamp() {
+        // really? is there a better way to do this?
+        return interaction.timeStamp().withZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS"));
+    }
+
+    public String getPingbackType() {
+        return interaction.type().toString();
+    }
+
+    public String getInteractionId() {
+        return interaction.id().toString();
+    }
+
+    public String getInteractionClientIp() {
+        return interaction.clientIp().getHostAddress();
+    }
+
+    public String getPayloadType() {
+        return payloadType.label;
+    }
+
+    public String getPayloadKey() {
+        return payloadKey;
     }
 }

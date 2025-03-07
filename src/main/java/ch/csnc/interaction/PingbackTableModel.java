@@ -9,12 +9,24 @@
 package ch.csnc.interaction;
 
 import javax.swing.table.AbstractTableModel;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class PingbackTableModel extends AbstractTableModel
 {
     private final List<Pingback> log;
+
+    String[] columnNames = {
+            "Time",                 // 0
+            "Pingback Type",        // 1
+            "Collaborator Payload", // 2
+            "Source IP Address",    // 3
+            "Payload Type",         // 4
+            "Payload Target"        // 5
+    };
 
     public PingbackTableModel()
     {
@@ -30,19 +42,13 @@ public class PingbackTableModel extends AbstractTableModel
     @Override
     public int getColumnCount()
     {
-        return 3;
+        return columnNames.length;
     }
 
     @Override
     public String getColumnName(int column)
     {
-        return switch (column)
-        {
-            case 0 -> "Timestamp";
-            case 1 -> "Type";
-            case 2 -> "Originating IP";
-            default -> "";
-        };
+        return columnNames[column];
     }
 
     @Override
@@ -50,11 +56,15 @@ public class PingbackTableModel extends AbstractTableModel
     {
         Pingback entry = log.get(rowIndex);
 
+        // could this be somehow moved to a list? List of functions that consume Pingback and return String?
         return switch (columnIndex)
         {
-            case 0 -> entry.interaction.timeStamp().toString();
-            case 1 -> entry.interaction.type().toString();
-            case 2 -> entry.interaction.clientIp().toString();
+            case 0 -> entry.getLocalTimestamp();
+            case 1 -> entry.getPingbackType();
+            case 2 -> entry.getInteractionId();
+            case 3 -> entry.getInteractionClientIp();
+            case 4 -> entry.getPayloadType();
+            case 5 -> entry.getPayloadKey();
             default -> "";
         };
     }
