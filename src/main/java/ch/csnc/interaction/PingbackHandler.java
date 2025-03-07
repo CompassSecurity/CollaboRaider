@@ -63,9 +63,8 @@ public class PingbackHandler {
         item.annotations().setNotes("CollaboRaider: Received " + interaction.type().name() + " pingback");
         item.annotations().setHighlightColor(SettingsModel.getInstance().proxyHighlightColor);
 
-
         // Add to table
-        Pingback pingback = new Pingback(item.finalRequest(), item.response(), interaction, fromOwnIP);
+        Pingback pingback = new Pingback(item, interaction, fromOwnIP);
         tableModel.add(pingback);
         montoyaApi.logging().logToOutput(" -> added to table.");
         montoyaApi.logging().logToOutput(" -> #entries: " + tableModel.getRowCount());

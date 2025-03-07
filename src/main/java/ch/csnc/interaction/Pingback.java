@@ -6,23 +6,27 @@ import burp.api.montoya.http.message.params.HttpParameterType;
 import burp.api.montoya.http.message.params.ParsedHttpParameter;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
+import burp.api.montoya.proxy.ProxyHttpRequestResponse;
 import ch.csnc.payload.PayloadType;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public class Pingback {
     public HttpRequest request;
     public HttpResponse response;
     public Interaction interaction;
+    ZonedDateTime requestTime;
     public boolean fromOwnIP;
 
     PayloadType payloadType;
     public String payloadKey, payloadValue;
 
 
-    public Pingback(HttpRequest request, HttpResponse response, Interaction interaction, boolean fromOwnIP) {
-        this.request = request;
-        this.response = response;
+    public Pingback(ProxyHttpRequestResponse item, Interaction interaction, boolean fromOwnIP) {
+        this.request = item.finalRequest();
+        this.response = item.response();
+        this.requestTime = item.time();
         this.interaction = interaction;
         this.fromOwnIP = fromOwnIP;
 
