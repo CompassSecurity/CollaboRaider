@@ -6,7 +6,6 @@ import burp.api.montoya.http.message.params.HttpParameterType;
 import burp.api.montoya.http.message.params.ParsedHttpParameter;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
-import ch.csnc.payload.Payload;
 import ch.csnc.payload.PayloadType;
 
 import java.util.List;

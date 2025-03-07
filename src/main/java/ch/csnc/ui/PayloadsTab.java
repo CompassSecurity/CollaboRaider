@@ -14,7 +14,7 @@ public class PayloadsTab extends JPanel {
     private final PayloadsTableModel payloadsTableModel;
     private final MontoyaApi montoyaApi;
     private JDialog dialog;
-    private Frame suiteFrame;
+    private final Frame suiteFrame;
 
     public PayloadsTab(MontoyaApi montoyaApi, PayloadsTableModel payloadsTableModel) {
         this.payloadsTableModel = payloadsTableModel;

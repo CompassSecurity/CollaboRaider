@@ -10,10 +10,7 @@ import ch.csnc.interaction.PingbackTableModel;
 import ch.csnc.interaction.Pingback;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 
-import java.awt.*;
 
 import static burp.api.montoya.ui.editor.EditorOptions.READ_ONLY;
 
@@ -25,11 +22,6 @@ public class InteractionsTab extends JSplitPane {
         this.api = api;
         setName(TAB_TITLE);
         constructLoggerTab(tableModel);
-    }
-
-    public void refresh() {
-        table.invalidate();
-        table.repaint();
     }
 
     private void constructLoggerTab(PingbackTableModel tableModel)
@@ -90,8 +82,6 @@ public class InteractionsTab extends JSplitPane {
             }
         };
 
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        return scrollPane;
+        return new JScrollPane(table);
     }
 }
