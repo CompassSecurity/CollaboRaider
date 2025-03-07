@@ -11,6 +11,7 @@ import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
 import ch.csnc.Extension;
 
 import java.util.List;
+import java.util.Objects;
 
 public class PingbackAuditIssue implements AuditIssue {
     Pingback pingback;
@@ -21,37 +22,52 @@ public class PingbackAuditIssue implements AuditIssue {
 
     @Override
     public String name() {
-        return String.format("%s: Received %s Pingback for %s %s",
-                Extension.name,
-                pingback.interaction.type().name(),
-                pingback.payloadType.label,
-                pingback.payloadKey
-        );
+        return "%s: Received %s Pingback for %s %s"
+                .formatted(
+                        Extension.name,
+                        pingback.interaction.type().name(),
+                        pingback.payloadType.label,
+                        pingback.payloadKey
+                );
     }
 
     @Override
     public String detail() {
+        String hostAddress = pingback.interaction.clientIp().getHostAddress();
+
         String issueMessage = "";
-        issueMessage += "The collaborator was contacted by <b>" + pingback.interaction.clientIp().getHostAddress() + "</b>.<br>\n";
+        issueMessage += "The collaborator was contacted by <b>%s</b>.<br>\n"
+                .formatted(hostAddress);
+
         if (pingback.fromOwnIP) {
             issueMessage += "<b>This interaction was issued by your own IP address.</b><br>\n";
         }
-        issueMessage += "Canonical host name: <b>" + pingback.interaction.clientIp().getCanonicalHostName() + "</b><br>\n";
-        issueMessage += "The following URL was used: <b>" + pingback.payloadValue + "</b><br><br>\n";
+
+        String canonicalHostName = pingback.interaction.clientIp().getCanonicalHostName();
+        if (!Objects.equals(canonicalHostName, hostAddress))
+            issueMessage += "Canonical host name: <b>%s</b><br>\n"
+                    .formatted(canonicalHostName);
+
+        issueMessage += "The following URL was used: <b>%s</b><br><br>\n"
+                .formatted(pingback.payloadValue);
 
 
         if (pingback.interaction.dnsDetails().isPresent()) {
             issueMessage += "<b>DNS Details:</b><br>\n";
-            issueMessage += "Query type: <b>" + pingback.interaction.dnsDetails().get().queryType().name() + "</b><br>\n";
+            issueMessage += "Query type: <b>%s</b><br>\n"
+                    .formatted(pingback.interaction.dnsDetails().get().queryType().name());
         }
         if (pingback.interaction.httpDetails().isPresent()) {
             issueMessage += "<b>HTTP Details:</b><br>\n";
-            issueMessage += "Protocol: " + pingback.interaction.httpDetails().get().protocol().name() + "\n<br>";
-            issueMessage += "Request: <pre>" + pingback.interaction.httpDetails().get().requestResponse().request().toString() + "\n</pre><br>";
+            issueMessage += "Protocol: %s\n<br>"
+                    .formatted(pingback.interaction.httpDetails().get().protocol().name());
+            issueMessage += "Request: <pre>%s</pre><br>"
+                    .formatted(pingback.interaction.httpDetails().get().requestResponse().request().toString());
         }
         if (pingback.interaction.customData().isPresent()) {
             issueMessage += "<b>Custom Data:</b><br>\n";
-            issueMessage += pingback.interaction.customData().get() + "<br>\n";
+            issueMessage += "%s<br>\n"
+                    .formatted(pingback.interaction.customData().get());
         }
 
         return issueMessage;
@@ -60,8 +76,7 @@ public class PingbackAuditIssue implements AuditIssue {
 
     @Override
     public String remediation() {
-        return "Avoid using user input as a source for the target of a request or prevent access to this functionality if possible. " +
-                "Alternatively, only allow access to whitelisted targets.";
+        return "Avoid using user input as a source for the target of a request or prevent access to this functionality if possible. " + "Alternatively, only allow access to whitelisted targets.";
     }
 
     @Override
@@ -90,8 +105,7 @@ public class PingbackAuditIssue implements AuditIssue {
         int start = pingback.request.toString().toLowerCase().indexOf(pingback.payloadValue.toLowerCase());
         int end = start + pingback.payloadValue.length();
         Marker requestHighlightMarker = Marker.marker(start, end);
-        HttpRequestResponse requestResponse = HttpRequestResponse.httpRequestResponse(pingback.request, pingback.response)
-                .withRequestMarkers(requestHighlightMarker);
+        HttpRequestResponse requestResponse = HttpRequestResponse.httpRequestResponse(pingback.request, pingback.response).withRequestMarkers(requestHighlightMarker);
         return List.of(requestResponse);
     }
 
@@ -102,15 +116,11 @@ public class PingbackAuditIssue implements AuditIssue {
 
     @Override
     public AuditIssueDefinition definition() {
-        String background =
-                "The server can be tricked into performing requests to other systems. " +
-                "This is known as server-side request forgery (SSRF).";
+        String background = "The server can be tricked into performing requests to other systems. " + "This is known as server-side request forgery (SSRF).";
 
         String name = "SSRF";
 
-        String remediation =
-                "Avoid using user input as a source for the target of a request or prevent access to this functionality if possible. " +
-                "Alternatively, only allow access to whitelisted targets.";
+        String remediation = "Avoid using user input as a source for the target of a request or prevent access to this functionality if possible. " + "Alternatively, only allow access to whitelisted targets.";
 
         AuditIssueSeverity typicalSeverity = AuditIssueSeverity.MEDIUM;
 

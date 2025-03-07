@@ -3,16 +3,7 @@ package ch.csnc.interaction;
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.collaborator.CollaboratorPayload;
 import burp.api.montoya.collaborator.Interaction;
-import burp.api.montoya.core.Marker;
-import burp.api.montoya.http.message.HttpHeader;
-import burp.api.montoya.http.message.HttpRequestResponse;
-import burp.api.montoya.http.message.params.HttpParameterType;
-import burp.api.montoya.http.message.params.ParsedHttpParameter;
 import burp.api.montoya.proxy.ProxyHttpRequestResponse;
-import burp.api.montoya.scanner.audit.issues.AuditIssue;
-import burp.api.montoya.scanner.audit.issues.AuditIssueConfidence;
-import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
-import ch.csnc.payload.Payload;
 import ch.csnc.settings.SettingsModel;
 
 import java.util.ArrayList;
@@ -64,8 +55,8 @@ public class PingbackHandler {
         // Check if this pingback came from the own IP
         boolean fromOwnIP = ownIPAddresses.contains(interaction.clientIp().getHostAddress());
         // Ignore
-        if (fromOwnIP && SettingsModel.getInstance().actionForOwnIP == SettingsModel.ActionForOwnIP.DROP ) {
-                return;
+        if (fromOwnIP && SettingsModel.getInstance().actionForOwnIP == SettingsModel.ActionForOwnIP.DROP) {
+            return;
         }
 
         // Set comment and highlight in Proxy tab (if enabled)
