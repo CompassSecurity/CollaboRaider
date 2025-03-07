@@ -83,7 +83,10 @@ public class Extension implements BurpExtension {
 
         // Create Interaction handler which processes events
         PingbackTableModel tableModel = new PingbackTableModel();
-        PingbackHandler pingbackHandler = new PingbackHandler(montoyaApi, tableModel, collaboratorClient.server().address(), checkIpPayload);
+        PingbackHandler pingbackHandler = new PingbackHandler(montoyaApi,
+                                                              tableModel,
+                                                              collaboratorClient.server().address(),
+                                                              checkIpPayload);
 
         // Polling
         BackgroundPoll backgroundPoll = new BackgroundPoll(collaboratorClient, logging, pingbackHandler);

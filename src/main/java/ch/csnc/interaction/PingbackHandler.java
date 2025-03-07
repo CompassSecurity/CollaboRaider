@@ -17,7 +17,10 @@ public class PingbackHandler {
     private final CollaboratorPayload checkIpPayload;
     private final List<String> ownIPAddresses;
 
-    public PingbackHandler(MontoyaApi montoyaApi, PingbackTableModel tableModel, String collaboratorServerAddress, CollaboratorPayload checkIpPayload) {
+    public PingbackHandler(MontoyaApi montoyaApi,
+                           PingbackTableModel tableModel,
+                           String collaboratorServerAddress,
+                           CollaboratorPayload checkIpPayload) {
         this.montoyaApi = montoyaApi;
         this.tableModel = tableModel;
         this.collaboratorServerAddress = collaboratorServerAddress;
@@ -31,19 +34,31 @@ public class PingbackHandler {
 
         // Check if the interaction was caused by the initial request to determine the own IP address
         if (Objects.equals(interaction.id().toString(), checkIpPayload.id().toString())) {
-            montoyaApi.logging().logToOutput("Own IP (" + interaction.type().name() + "): " + interaction.clientIp().getHostAddress());
+
+            montoyaApi.logging()
+                      .logToOutput("Own IP (%s): %s".formatted(interaction.type().name(),
+                                                               interaction.clientIp().getHostAddress()));
             ownIPAddresses.add(interaction.clientIp().getHostAddress());
             return;
         }
 
         // Search for all occurrences of the collaborator ID that caused this interaction
-        List<ProxyHttpRequestResponse> proxyHttpRequestResponseList = montoyaApi.proxy().history(requestResponse -> requestResponse.finalRequest().toString().contains(interaction.id().toString()));
+        List<ProxyHttpRequestResponse> proxyList = montoyaApi.proxy()
+                                                             .history(requestResponse ->
+                                                                              requestResponse.finalRequest()
+                                                                                             .toString()
+                                                                                             .contains(interaction.id().toString()));
 
         // Log to output
-        montoyaApi.logging().logToOutput(String.format("Got interaction %s (%s) from IP %s. Found %d corresponding responses", interaction.type().name(), interaction.id(), interaction.clientIp(), proxyHttpRequestResponseList.size()));
+        montoyaApi.logging()
+                  .logToOutput(String.format("Got interaction %s (%s) from IP %s. Found %d corresponding responses",
+                                             interaction.type().name(),
+                                             interaction.id(),
+                                             interaction.clientIp(),
+                                             proxyList.size()));
 
         // Process each request
-        for (ProxyHttpRequestResponse item : proxyHttpRequestResponseList) {
+        for (ProxyHttpRequestResponse item : proxyList) {
             processInteractionWithProxyItem(interaction, item);
         }
 

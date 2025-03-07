@@ -53,11 +53,17 @@ public class PayloadsTab extends JPanel {
 
     private void onClickRemoveButton(ActionEvent e) {
         int[] selectedRows = table.getSelectedRows();
-        montoyaApi.logging().logToOutput("Removing " + selectedRows.length + " payloads");
         if (selectedRows.length == 0) {
             JOptionPane.showMessageDialog(suiteFrame, "No payload selected", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
-            int confirm = JOptionPane.showOptionDialog(suiteFrame, "Delete selected payload?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            int confirm = JOptionPane.showOptionDialog(suiteFrame,
+                                                       "Delete selected payloads?",
+                                                       "Confirm",
+                                                       JOptionPane.YES_NO_OPTION,
+                                                       JOptionPane.QUESTION_MESSAGE,
+                                                       null,
+                                                       null,
+                                                       null);
             if (confirm == JOptionPane.YES_OPTION) {
                 for (int selectionIndex = selectedRows.length - 1; selectionIndex >= 0; selectionIndex--) {
                     payloadsTableModel.remove(selectedRows[selectionIndex]);
@@ -95,7 +101,8 @@ public class PayloadsTab extends JPanel {
         // Value (Payload to be inserted)
         JLabel valueLabel = new JLabel("Value:");
         JTextField valueField = new JTextField(15);
-        JLabel infoLabel = new JLabel("Use %s as placeholder for Collaborator URL, eg. http://%s/file.xml.\nUse %h as placeholder for the current host.");
+        JLabel infoLabel = new JLabel(
+                "Use %s as placeholder for Collaborator URL, eg. http://%s/file.xml.\nUse %h as placeholder for the current host.");
 
         // Save button
         JButton saveButton = new JButton("Save");

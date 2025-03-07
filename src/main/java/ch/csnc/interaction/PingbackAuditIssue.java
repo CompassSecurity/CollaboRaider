@@ -53,8 +53,12 @@ public class PingbackAuditIssue implements AuditIssue {
                 .formatted(pingback.payloadValue);
 
         Duration duration = Duration.between(pingback.requestTime, pingback.interaction.timeStamp());
-        String durationString = duration.toString().substring(2).replaceAll("(\\d[HMS])(?!$)", "$1 ").toLowerCase();
-        issueMessage += "The pingback was received <b>%s</b> after the request.<br><br>".formatted(durationString);
+        String durationString = duration.toString()
+                                        .substring(2)
+                                        .replaceAll("(\\d[HMS])(?!$)", "$1 ")
+                                        .toLowerCase();
+        issueMessage += "The pingback was received <b>%s</b> after the request.<br><br>"
+                .formatted(durationString);
 
         // Show details for DNS pingback
         if (pingback.interaction.dnsDetails().isPresent()) {
@@ -125,7 +129,9 @@ public class PingbackAuditIssue implements AuditIssue {
         int start = pingback.request.toString().toLowerCase().indexOf(pingback.payloadValue.toLowerCase());
         int end = start + pingback.payloadValue.length();
         Marker requestHighlightMarker = Marker.marker(start, end);
-        HttpRequestResponse requestResponse = HttpRequestResponse.httpRequestResponse(pingback.request, pingback.response).withRequestMarkers(requestHighlightMarker);
+        HttpRequestResponse requestResponse = HttpRequestResponse.httpRequestResponse(pingback.request,
+                                                                                      pingback.response)
+                                                                 .withRequestMarkers(requestHighlightMarker);
         return List.of(requestResponse);
     }
 
