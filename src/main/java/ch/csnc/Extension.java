@@ -127,13 +127,15 @@ public class Extension implements BurpExtension {
 
                 String[] split = line.split(",", 3);
 
-                PayloadType type = switch (split[0]) {
-                    case "header" -> PayloadType.HEADER;
-                    case "param" -> PayloadType.PARAM;
-                    default -> PayloadType.INVALID;
-                };
+                PayloadType type = null;
+                if (Objects.equals(split[0], "header")) {
+                    type = PayloadType.HEADER;
+                }
+                if (Objects.equals(split[0], "param")) {
+                    type = PayloadType.PARAM;
+                }
 
-                if (type == PayloadType.INVALID) {
+                if (type == null) {
                     logging.logToOutput("Invalid injection point: " + line);
                     continue;
                 }
