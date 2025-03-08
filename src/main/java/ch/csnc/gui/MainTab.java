@@ -1,6 +1,7 @@
-package ch.csnc.ui;
+package ch.csnc.gui;
 
 import burp.api.montoya.MontoyaApi;
+import ch.csnc.gui.interactions.InteractionsTab;
 import ch.csnc.interaction.PingbackTableModel;
 import ch.csnc.payload.PayloadsTableModel;
 

@@ -1,4 +1,4 @@
-package ch.csnc.ui;
+package ch.csnc.gui;
 
 import burp.api.montoya.MontoyaApi;
 import ch.csnc.payload.Payload;

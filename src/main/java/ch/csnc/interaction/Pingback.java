@@ -59,7 +59,7 @@ public class Pingback {
 
     public String getLocalTimestamp() {
         // really? is there a better way to do this?
-        return interaction.timeStamp().withZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS"));
+        return interaction.timeStamp().withZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
     }
 
     public String getPingbackType() {

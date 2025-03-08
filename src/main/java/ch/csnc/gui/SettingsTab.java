@@ -1,4 +1,4 @@
-package ch.csnc.ui;
+package ch.csnc.gui;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;

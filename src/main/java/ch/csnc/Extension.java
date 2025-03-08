@@ -14,7 +14,7 @@ import ch.csnc.interaction.PingbackTableModel;
 import ch.csnc.payload.Payload;
 import ch.csnc.payload.PayloadType;
 import ch.csnc.payload.PayloadsTableModel;
-import ch.csnc.ui.MainTab;
+import ch.csnc.gui.MainTab;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
