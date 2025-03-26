@@ -10,6 +10,8 @@ public class DescriptionViewer extends JPanel {
         textPane = new JTextPane();
         textPane.setContentType("text/html");
         textPane.setText(htmlText);
+
+        // Explicitly allow HTML content
         textPane.putClientProperty("html.disable", null);
         setLayout(new FlowLayout(FlowLayout.LEFT));
         add(textPane);

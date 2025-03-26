@@ -142,11 +142,13 @@ public class PingbackAuditIssue implements AuditIssue {
 
     @Override
     public AuditIssueDefinition definition() {
-        String background = "The server can be tricked into performing requests to other systems. " + "This is known as server-side request forgery (SSRF).";
-
         String name = "SSRF";
 
-        String remediation = "Avoid using user input as a source for the target of a request or prevent access to this functionality if possible. " + "Alternatively, only allow access to whitelisted targets.";
+        String background = "The server might be tricked into performing requests to other systems. " +
+                "This is known as server-side request forgery (SSRF).";
+
+        String remediation = "Avoid using user input as a source for the target of a request or prevent access to this functionality if possible. " +
+                "Alternatively, only allow access to whitelisted targets.";
 
         AuditIssueSeverity typicalSeverity = AuditIssueSeverity.MEDIUM;
 

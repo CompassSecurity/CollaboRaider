@@ -29,8 +29,7 @@ public class CustomProxyRequestHandler implements ProxyRequestHandler {
 
     @Override
     public ProxyRequestReceivedAction handleRequestReceived(InterceptedRequest interceptedRequest) {
-        HttpRequest newRequest = interceptedRequest.withHeader("X-ReceivedAction", "test");
-        return ProxyRequestReceivedAction.continueWith(newRequest);
+        return ProxyRequestReceivedAction.continueWith(interceptedRequest);
     }
 
     @Override
@@ -47,7 +46,9 @@ public class CustomProxyRequestHandler implements ProxyRequestHandler {
                 continue;
 
             String target = payload.getKey();
-            String value = payload.getValue().replace("%s", collaboratorClient.generatePayload().toString());
+            String value = payload.getValue()
+                                  .replace("%s", collaboratorClient.generatePayload().toString())
+                                  .replace("%h", interceptedRequest.headerValue("Host"));
 
             switch (payload.getType()) {
                 case HEADER:

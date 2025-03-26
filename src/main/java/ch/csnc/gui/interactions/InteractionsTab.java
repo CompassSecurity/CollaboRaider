@@ -64,7 +64,7 @@ public class InteractionsTab extends JSplitPane {
 
         pane.addTab("Description", descriptionViewer);
         pane.addTab("Request to server", requestViewer.uiComponent());
-        pane.addTab("Response to server", responseViewer.uiComponent());
+        pane.addTab("Response from server", responseViewer.uiComponent());
 
         return pane;
     }
@@ -91,16 +91,16 @@ public class InteractionsTab extends JSplitPane {
                 requestViewer.setRequest(pingback.request);
                 responseViewer.setResponse(pingback.response);
 
+                // Highlight Collaborator ID
                 requestViewer.setSearchExpression(pingback.interaction.id().toString());
 
-                // Remove tab from other interaction type
+                // If interaction type changes, remove all tabs except the first three for description/request/response
                 if (!pingback.interaction.type().equals(previousType)) {
 
                     // Store index of current tab for this interaction type
                     lastTabActive.put(previousType, tabbedPane.getSelectedIndex());
-                    api.logging().logToOutput("Currently active tab index: %d".formatted(tabbedPane.getSelectedIndex()));
 
-                    for (int i=tabbedPane.getTabCount()-1; i>1; i--) {
+                    for (int i=tabbedPane.getTabCount()-1; i>2; i--) {
                         tabbedPane.removeTabAt(i);
                     }
 
@@ -113,24 +113,27 @@ public class InteractionsTab extends JSplitPane {
                         case SMTP -> tabbedPane.addTab("Raw SMTP Conversation", collaboratorSMTPViewer.uiComponent());
                     }
 
-                    api.logging().logToOutput("Retrieved tab %d for type %s".formatted(lastTabActive.getOrDefault(pingback.interaction.type(), 0), pingback.interaction.type()));
                     tabbedPane.setSelectedIndex(lastTabActive.getOrDefault(pingback.interaction.type(), 0));
                 }
 
+                // Store current interaction type
                 previousType = pingback.interaction.type();
 
+                // Show details for HTTP pingback
                 if (pingback.interaction.httpDetails().isPresent()) {
                     descriptionViewer.setText("<html><b>HTTP</b><br>details...</html>");
                     collaboratorHTTPRequestViewer.setRequest(pingback.interaction.httpDetails().get().requestResponse().request());
                     collaboratorHTTPResponseViewer.setResponse(pingback.interaction.httpDetails().get().requestResponse().response());
                 }
 
-                if (pingback.interaction.dnsDetails().isPresent()) {
+                // Show details for DNS pingback
+                else if (pingback.interaction.dnsDetails().isPresent()) {
                     descriptionViewer.setText("<html><b>DNS</b><br>details...</html>");
                     collaboratorDNSViewer.setContents(pingback.interaction.dnsDetails().get().query());
                 }
 
-                if (pingback.interaction.smtpDetails().isPresent()) {
+                // Show details for SMTP pingback
+                else if (pingback.interaction.smtpDetails().isPresent()) {
                     descriptionViewer.setText("<html><b>SMTP</b><br>details...</html>");
                     collaboratorSMTPViewer.setContents(ByteArray.byteArray(pingback.interaction.smtpDetails().get().conversation()));
                 }
