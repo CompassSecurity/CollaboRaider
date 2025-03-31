@@ -1,6 +1,7 @@
 package ch.csnc.interaction;
 
 import burp.api.montoya.collaborator.Interaction;
+import burp.api.montoya.collaborator.InteractionType;
 import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.params.HttpParameterType;
 import burp.api.montoya.http.message.params.ParsedHttpParameter;
@@ -18,11 +19,10 @@ public class Pingback {
     public HttpRequest request;
     public HttpResponse response;
     public Interaction interaction;
-    ZonedDateTime requestTime;
     public boolean fromOwnIP;
-
-    PayloadType payloadType;
     public String payloadKey, payloadValue;
+    ZonedDateTime requestTime;
+    PayloadType payloadType;
 
 
     public Pingback(ProxyHttpRequestResponse item, Interaction interaction, boolean fromOwnIP) {
@@ -59,7 +59,9 @@ public class Pingback {
 
     public String getLocalTimestamp() {
         // really? is there a better way to do this?
-        return interaction.timeStamp().withZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+        return interaction.timeStamp()
+                          .withZoneSameInstant(ZoneId.systemDefault())
+                          .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
     }
 
     public String getPingbackType() {
@@ -80,5 +82,32 @@ public class Pingback {
 
     public String getPayloadKey() {
         return payloadKey;
+    }
+
+    public String getHTMLDescription() {
+        String data = "The collaborator server received a %s pingback from IP address <b>%s</b> at %s.<br>".formatted(
+                getPingbackType(),
+                getInteractionClientIp(),
+                getLocalTimestamp());
+        data += "This pingback was caused by a payload in the %s <b>%s</b>.".formatted(getPayloadType(),
+                                                                                       getPayloadKey());
+
+        // DNS details
+        if (interaction.type() == InteractionType.DNS && interaction.dnsDetails().isPresent()) {
+
+        }
+
+        // HTTP details
+        else if (interaction.type() == InteractionType.HTTP && interaction.httpDetails().isPresent()) {
+
+        }
+
+        // SMTP details
+        else if (interaction.type() == InteractionType.SMTP && interaction.smtpDetails().isPresent()) {
+
+        }
+
+
+        return data;
     }
 }
