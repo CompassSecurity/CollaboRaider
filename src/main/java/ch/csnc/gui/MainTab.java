@@ -14,9 +14,10 @@ public class MainTab extends JTabbedPane {
         PayloadsTab payloadsTab = new PayloadsTab(montoyaApi, settingsTableModel);
         SettingsTab settingsTab = new SettingsTab();
 
-        this.addTab(interactionsTab.TAB_TITLE, interactionsTab);
+        this.addTab(settingsTab.TAB_TITLE, new JScrollPane(settingsTab));
         this.addTab(payloadsTab.TAB_TITLE, payloadsTab);
-        this.addTab(settingsTab.TAB_TITLE, settingsTab);
+        this.addTab(interactionsTab.TAB_TITLE, interactionsTab);
+
 
         /*
         addChangeListener(e -> {
