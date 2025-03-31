@@ -91,8 +91,11 @@ public class InteractionsTab extends JSplitPane {
                 requestViewer.setRequest(pingback.request);
                 responseViewer.setResponse(pingback.response);
 
-                // Highlight Collaborator ID
+                // Highlight Collaborator ID in request
                 requestViewer.setSearchExpression(pingback.interaction.id().toString());
+
+                // Populate the description tab
+                descriptionViewer.setText(pingback.getHTMLDescription());
 
                 // If interaction type changes, remove all tabs except the first three for description/request/response
                 if (!pingback.interaction.type().equals(previousType)) {
@@ -121,26 +124,29 @@ public class InteractionsTab extends JSplitPane {
 
                 // Show details for HTTP pingback
                 if (pingback.interaction.httpDetails().isPresent()) {
-                    descriptionViewer.setText("<html><b>HTTP</b><br>details...</html>");
                     collaboratorHTTPRequestViewer.setRequest(pingback.interaction.httpDetails().get().requestResponse().request());
                     collaboratorHTTPResponseViewer.setResponse(pingback.interaction.httpDetails().get().requestResponse().response());
                 }
 
                 // Show details for DNS pingback
                 else if (pingback.interaction.dnsDetails().isPresent()) {
-                    descriptionViewer.setText("<html><b>DNS</b><br>details...</html>");
                     collaboratorDNSViewer.setContents(pingback.interaction.dnsDetails().get().query());
                 }
 
                 // Show details for SMTP pingback
                 else if (pingback.interaction.smtpDetails().isPresent()) {
-                    descriptionViewer.setText("<html><b>SMTP</b><br>details...</html>");
                     collaboratorSMTPViewer.setContents(ByteArray.byteArray(pingback.interaction.smtpDetails().get().conversation()));
                 }
 
                 super.changeSelection(rowIndex, columnIndex, toggle, extend);
             }
         };
+
+        // TODO: popup menu
+        JPopupMenu popup = new JPopupMenu();
+        popup.add( new JMenuItem("Add comment") );
+        popup.add( new JMenuItem("Clear interactions") );
+        table.setComponentPopupMenu(popup);
 
         table.setAutoCreateRowSorter(true);
 
