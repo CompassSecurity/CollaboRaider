@@ -87,8 +87,9 @@ public class InteractionsTab extends JSplitPane {
                     setDividerLocation(0.75);
                 }
 
-                // Show the log entry for the selected row
-                Pingback pingback = tableModel.get(rowIndex);
+                // Convert index of selected row to index in data object
+                int actualRowIndex = convertRowIndexToModel(rowIndex);
+                Pingback pingback = tableModel.get(actualRowIndex);
 
                 // Show original request and response that caused the pingback
                 requestViewer.setRequest(pingback.request);
