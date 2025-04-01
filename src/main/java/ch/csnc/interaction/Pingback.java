@@ -103,7 +103,7 @@ public class Pingback {
             data += "<b style=\"color:blue;\">Info: This interaction was received from your own IP address.</b><br>";
         }
 
-        data += "This pingback was caused by a payload in the %s <b>%s</b><br>.".formatted(getPayloadType(),
+        data += "This pingback was caused by a payload in the %s <b>%s</b>.<br>".formatted(getPayloadType(),
                                                                                            getPayloadKey());
         // Calculate duration
         Duration duration = Duration.between(requestTime, interaction.timeStamp());
