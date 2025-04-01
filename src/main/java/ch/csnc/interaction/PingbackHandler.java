@@ -69,20 +69,20 @@ public class PingbackHandler {
 
         // Check if this pingback came from the own IP
         boolean fromOwnIP = ownIPAddresses.contains(interaction.clientIp().getHostAddress());
-        // Ignore
+        // If setting is enabled, ignore this request
         if (fromOwnIP && SettingsModel.getInstance().actionForOwnIP == SettingsModel.ActionForOwnIP.DROP) {
             return;
         }
-
-        // Set comment and highlight in Proxy tab (if enabled)
-        item.annotations().setNotes("CollaboRaider: Received " + interaction.type().name() + " pingback");
-        item.annotations().setHighlightColor(SettingsModel.getInstance().proxyHighlightColor);
 
         // Add to table
         Pingback pingback = new Pingback(item, interaction, fromOwnIP);
         tableModel.add(pingback);
         montoyaApi.logging().logToOutput(" -> added to table.");
         montoyaApi.logging().logToOutput(" -> #entries: " + tableModel.getRowCount());
+
+        // Set comment and highlight in Proxy tab (if enabled)
+        item.annotations().setNotes("CollaboRaider: Received %s pingback for %s %s".formatted(interaction.type().name(), pingback.getPayloadType(), pingback.getPayloadKey()));
+        item.annotations().setHighlightColor(SettingsModel.getInstance().proxyHighlightColor);
 
         // Create audit issue
         PingbackAuditIssue issue = new PingbackAuditIssue(pingback);
