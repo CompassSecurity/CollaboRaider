@@ -3,6 +3,9 @@ package ch.csnc.gui.interactions;
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.collaborator.InteractionType;
 import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.core.Marker;
+import burp.api.montoya.http.message.HttpRequestResponse;
+import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.ui.UserInterface;
 import burp.api.montoya.ui.editor.*;
 import ch.csnc.interaction.PingbackTableModel;
@@ -95,7 +98,7 @@ public class InteractionsTab extends JSplitPane {
                 requestViewer.setSearchExpression(pingback.interaction.id().toString());
 
                 // Populate the description tab
-                descriptionViewer.setText(pingback.getHTMLDescription());
+                descriptionViewer.setText(pingback.getDescription());
 
                 // If interaction type changes, remove all tabs except the first three for description/request/response
                 if (!pingback.interaction.type().equals(previousType)) {
