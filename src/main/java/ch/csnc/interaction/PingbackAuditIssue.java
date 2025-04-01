@@ -23,7 +23,7 @@ public class PingbackAuditIssue implements AuditIssue {
 
     @Override
     public String name() {
-        return "%s: Received %s Pingback for %s %s"
+        return "%s: %s Pingback for %s %s"
                 .formatted(
                         Extension.name,
                         pingback.interaction.type().name(),
@@ -34,73 +34,12 @@ public class PingbackAuditIssue implements AuditIssue {
 
     @Override
     public String detail() {
-        String hostAddress = pingback.interaction.clientIp().getHostAddress();
-
-        String issueMessage = "";
-        issueMessage += "The collaborator was contacted by <b>%s</b>.<br>"
-                .formatted(hostAddress);
-
-        if (pingback.fromOwnIP) {
-            issueMessage += "<b>This interaction was issued by your own IP address.</b><br>";
-        }
-
-        String canonicalHostName = pingback.interaction.clientIp().getCanonicalHostName();
-        if (!Objects.equals(canonicalHostName, hostAddress))
-            issueMessage += "Canonical host name: <b>%s</b><br>"
-                    .formatted(canonicalHostName);
-
-        issueMessage += "The following URL was used: <b>%s</b><br>"
-                .formatted(pingback.payloadValue);
-
-        Duration duration = Duration.between(pingback.requestTime, pingback.interaction.timeStamp());
-        String durationString = duration.toString()
-                                        .substring(2)
-                                        .replaceAll("(\\d[HMS])(?!$)", "$1 ")
-                                        .toLowerCase();
-        issueMessage += "The pingback was received <b>%s</b> after the request.<br><br>"
-                .formatted(durationString);
-
-        // Show details for DNS pingback
-        if (pingback.interaction.dnsDetails().isPresent()) {
-            issueMessage += "<b>DNS Details:</b><br>";
-            issueMessage += "Query type: <b>%s</b><br>"
-                    .formatted(pingback.interaction.dnsDetails().get().queryType().name());
-            // TODO: Parse raw DNS query to get more info
-            // issueMessage += "Raw query: <br><pre>%s</pre><br>".formatted(pingback.interaction.dnsDetails().get().query().toString());
-        }
-
-        // Show details for HTTP(S) pingback
-        if (pingback.interaction.httpDetails().isPresent()) {
-            issueMessage += "<b>HTTP Details:</b><br>";
-            issueMessage += "Protocol: %s<br>"
-                    .formatted(pingback.interaction.httpDetails().get().protocol().name());
-            issueMessage += "Request: <pre>%s</pre><br>"
-                    .formatted(pingback.interaction.httpDetails().get().requestResponse().request().toString());
-        }
-
-        // Show details for SMTP(S) pingback
-        if (pingback.interaction.smtpDetails().isPresent()) {
-            issueMessage += "<b>SMTP Details:</b><br>";
-            issueMessage += "Protocol: %s<br>"
-                    .formatted(pingback.interaction.smtpDetails().get().protocol().name());
-            issueMessage += "SMTP Conversation:<br><pre>%s</pre>"
-                    .formatted(pingback.interaction.smtpDetails().get().conversation());
-        }
-
-        // Show custom data
-        if (pingback.interaction.customData().isPresent()) {
-            issueMessage += "<b>Custom Data:</b><br>";
-            issueMessage += "%s<br>"
-                    .formatted(pingback.interaction.customData().get());
-        }
-
-        return issueMessage;
-
+        return pingback.getDescription();
     }
 
     @Override
     public String remediation() {
-        return "Avoid using user input as a source for the target of a request or prevent access to this functionality if possible. " + "Alternatively, only allow access to whitelisted targets.";
+        return "Avoid using user input as a source for the target of a request or prevent access to this functionality if possible. Alternatively, only allow access to whitelisted targets.";
     }
 
     @Override
@@ -115,7 +54,10 @@ public class PingbackAuditIssue implements AuditIssue {
 
     @Override
     public AuditIssueSeverity severity() {
-        return AuditIssueSeverity.HIGH;
+        if (pingback.fromOwnIP)
+            return AuditIssueSeverity.MEDIUM;
+        else
+            return AuditIssueSeverity.HIGH;
     }
 
     @Override
