@@ -108,10 +108,15 @@ public class Pingback {
         // Calculate duration
         Duration duration = Duration.between(requestTime, interaction.timeStamp());
         String durationString = duration.toString()
+                                        // from docs: "The format of the returned string will be PTnHnMnS,
+                                        // where n is the relevant hours, minutes or seconds part of the duration"
+                                        // => remove trailing "PT"
                                         .substring(2)
+                                        // Add spaces to every nH, nM, nS except the last part
                                         .replaceAll("(\\d[HMS])(?!$)", "$1 ")
+                                        // don't shout so loud
                                         .toLowerCase();
-        data += "It was received <b>%s</b> after the request containing the payload was sent.<br><br>"
+        data += "It was received <b>%s</b> after the request with the payload was sent.<br><br>"
                 .formatted(durationString);
 
         // Show details for DNS pingback
