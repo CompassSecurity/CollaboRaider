@@ -8,6 +8,7 @@ import burp.api.montoya.http.message.params.ParsedHttpParameter;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
 import burp.api.montoya.proxy.ProxyHttpRequestResponse;
+import ch.csnc.Utils;
 import ch.csnc.payload.PayloadType;
 
 import java.time.Duration;
@@ -125,7 +126,8 @@ public class Pingback {
             data += "Query type: <b>%s</b><br>"
                     .formatted(interaction.dnsDetails().get().queryType().name());
             // TODO: Parse raw DNS query to get more info
-            data += "Raw query: <br><pre>%s</pre><br>".formatted(interaction.dnsDetails().get().query().toString());
+            String rawRequest = Utils.sanitize(interaction.dnsDetails().get().query().toString());
+            data += "Raw query: <br><pre>%s</pre><br>".formatted(rawRequest);
         }
 
         // HTTP details
@@ -133,8 +135,9 @@ public class Pingback {
             data += "<b>HTTP Details:</b><br>";
             data += "Protocol: %s<br>"
                     .formatted(interaction.httpDetails().get().protocol().name());
+            String rawRequest = Utils.sanitize(interaction.httpDetails().get().requestResponse().request().toString());
             data += "Request: <pre>%s</pre><br>"
-                    .formatted(interaction.httpDetails().get().requestResponse().request().toString());
+                    .formatted(rawRequest);
         }
 
         // SMTP details
@@ -142,8 +145,10 @@ public class Pingback {
             data += "<b>SMTP Details:</b><br>";
             data += "Protocol: %s<br>"
                     .formatted(interaction.smtpDetails().get().protocol().name());
+            // TODO: Parse SMTP conversation to get more info
+            String rawRequest = Utils.sanitize(interaction.smtpDetails().get().conversation());
             data += "SMTP Conversation:<br><pre>%s</pre><br>"
-                    .formatted(interaction.smtpDetails().get().conversation());
+                    .formatted(rawRequest);
         }
 
         // Show custom data (if it exists)
