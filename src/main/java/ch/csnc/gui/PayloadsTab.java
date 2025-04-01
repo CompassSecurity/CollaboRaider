@@ -303,8 +303,8 @@ public class PayloadsTab extends JPanel {
             public void componentResized(ComponentEvent e) {
                 int totalWidth = scrollPane.getWidth();
                 int usedWidth = column1.getPreferredWidth() + column2.getPreferredWidth() + column3.getPreferredWidth();
-
-                int remainingWidth = totalWidth - usedWidth - 12;
+                int buffer = 2;
+                int remainingWidth = totalWidth - usedWidth - buffer;
 
                 TableColumn column4 = table.getColumnModel().getColumn(3);
                 column4.setPreferredWidth(Math.max(remainingWidth, 300));
