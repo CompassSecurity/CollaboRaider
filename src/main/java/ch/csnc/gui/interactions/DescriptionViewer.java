@@ -14,8 +14,7 @@ public class DescriptionViewer extends JPanel {
         // Explicitly allow HTML content
         textPane.putClientProperty("html.disable", null);
         setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        setOpaque(true);
+        setOpaque(false);
 
         add(textPane);
     }
