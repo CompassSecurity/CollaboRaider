@@ -6,10 +6,10 @@ import java.util.List;
 public class PayloadsTableModel extends AbstractTableModel {
     private final List<Payload> payloads;
     private final String[] columnNames = {
-            "Active",
+            "Active?",
             "Payload type",
             "Field name",
-            "Value"
+            "Payload value"
     };
 
     public PayloadsTableModel(List<Payload> payloads) {
