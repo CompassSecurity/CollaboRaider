@@ -23,7 +23,7 @@ public class SettingsTab extends JPanel {
         gbc.weightx = 1;
 
         // Define margins
-        gbc.insets = new Insets(10, 10, 0, 10);
+        gbc.insets = new Insets(15, 10, 0, 10);
 
         gbc.gridy = 0;
         add(new CollaboratorSettingsPanel(), gbc);
@@ -32,7 +32,13 @@ public class SettingsTab extends JPanel {
         add(new InteractionsSettingsPanel(), gbc);
 
         gbc.gridy++;
-        gbc.weighty = 1; // Add weight to last element so that everything is shifted towards the anchor point
         add(new ProxySettingsPanel(), gbc);
+
+        gbc.gridy++;
+        add(new ExportSettingsPanel(), gbc);
+
+        gbc.gridy++;
+        gbc.weighty = 1; // Add weight to last element so that everything is shifted towards the anchor point
+        add(new AboutPanel(), gbc);
     }
 }
