@@ -28,15 +28,13 @@ public class AboutPanel extends SettingsPanel {
 
         JLabel developerLabel = new JLabel();
         developerLabel.putClientProperty("html.disable", null);
-        //developerLabel.setContentType("text/html");
         developerLabel.setOpaque(false);
-        //developerLabel.setEditable(false);
         developerLabel.setText("""
-            <html>
-            Developed by Compass Security (<a href=\"http://compass-security.com\">http://compass-security.com</a>), <br>
-            based on the extension <i>Collaborator Everywhere</i> (<a href=\"https://github.com/PortSwigger/collaborator-everywhere\">https://github.com/PortSwigger/collaborator-everywhere</a>) by James 'albinowax' Kettle.
-            </html>
-            """);
+                               <html>
+                               Developed by Compass Security (<a href="http://compass-security.com">http://compass-security.com</a>), <br>
+                               based on the extension <i>Collaborator Everywhere</i> (<a href="https://github.com/PortSwigger/collaborator-everywhere">https://github.com/PortSwigger/collaborator-everywhere</a>) by James 'albinowax' Kettle.
+                               </html>
+                               """);
         add(developerLabel,
             new GBC(2, 0)
                     .setWeights(0, 1)

@@ -5,6 +5,7 @@ import java.awt.*;
 
 public class DescriptionViewer extends JPanel {
     JTextPane textPane;
+
     public DescriptionViewer() {
         String htmlText = "<html><h1>Hello, World!</h1><p>This is a <b>JTextPane</b> with <i>HTML</i> content.</p></html>";
         textPane = new JTextPane();
@@ -18,6 +19,7 @@ public class DescriptionViewer extends JPanel {
 
         add(textPane);
     }
+
     public void setText(String description) {
         textPane.setText(description);
     }

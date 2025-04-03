@@ -33,7 +33,7 @@ public class BackgroundPoll {
 
     public void start() {
         scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
-        schedule = scheduledThreadPoolExecutor.scheduleAtFixedRate(this::execute,0, 5, TimeUnit.SECONDS);
+        schedule = scheduledThreadPoolExecutor.scheduleAtFixedRate(this::execute, 0, 5, TimeUnit.SECONDS);
     }
 
     public void stop() {

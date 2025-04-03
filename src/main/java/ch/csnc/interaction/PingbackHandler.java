@@ -47,7 +47,8 @@ public class PingbackHandler {
                                                              .history(requestResponse ->
                                                                               requestResponse.finalRequest()
                                                                                              .toString()
-                                                                                             .contains(interaction.id().toString()));
+                                                                                             .contains(interaction.id()
+                                                                                                                  .toString()));
 
         // Log to output
         montoyaApi.logging()
@@ -81,7 +82,10 @@ public class PingbackHandler {
         montoyaApi.logging().logToOutput(" -> #entries: " + tableModel.getRowCount());
 
         // Set comment and highlight in Proxy tab (if enabled)
-        item.annotations().setNotes("CollaboRaider: Received %s pingback for %s %s".formatted(interaction.type().name(), pingback.getPayloadType(), pingback.getPayloadKey()));
+        item.annotations()
+            .setNotes("CollaboRaider: Received %s pingback for %s %s".formatted(interaction.type().name(),
+                                                                                pingback.getPayloadType(),
+                                                                                pingback.getPayloadKey()));
         item.annotations().setHighlightColor(SettingsModel.getInstance().proxyHighlightColor);
 
         // Create audit issue

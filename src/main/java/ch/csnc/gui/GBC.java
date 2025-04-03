@@ -13,6 +13,7 @@ public class GBC extends GridBagConstraints {
     /**
      * Construct a GridBagConstraints object and set x and y positions.
      * This is done by specifying the grid cell that the top-left corner of the component will be displayed in.
+     *
      * @param row row index (y position)
      * @param row column index (x position)
      */
@@ -26,7 +27,8 @@ public class GBC extends GridBagConstraints {
     /**
      * Specify the number of rows (gridheight) and columns (gridwidth)  that the component will occupy.
      * The default value is 1.
-     * @param gridwidth number of columns to occupy
+     *
+     * @param gridwidth  number of columns to occupy
      * @param gridheight number of rows to occupy
      * @return GBC object for chained calls
      */
@@ -46,6 +48,7 @@ public class GBC extends GridBagConstraints {
      * <li>GridBagConstraints.VERTICAL (make the component tall enough to fill its display area vertically, but don't change its width)</li>
      * <li>GridBagConstraints.BOTH (make the component fill its display area entirely)</li>
      * </ul>
+     *
      * @param value
      * @return GBC object for chained calls
      */
@@ -57,6 +60,7 @@ public class GBC extends GridBagConstraints {
 
     /**
      * Set internal padding within the layout
+     *
      * @param ipady vertical padding
      * @param ipadx horizontal padding
      * @return GBC object for chained calls
@@ -70,10 +74,11 @@ public class GBC extends GridBagConstraints {
 
     /**
      * Set external padding (=margin?) that defines the amount of space between the component and the edges of its display area.
-     * @param top distance to top edge
-     * @param left distance to left edge
+     *
+     * @param top    distance to top edge
+     * @param left   distance to left edge
      * @param bottom distance to bottom edge
-     * @param right distance to right edge
+     * @param right  distance to right edge
      * @return GBC object for chained calls
      */
     public GBC setMargin(int top, int left, int bottom, int right) {
@@ -86,6 +91,7 @@ public class GBC extends GridBagConstraints {
      * An anchor is used if the component is smaller than its display area.
      * It determines where to place the component within the available area.
      * If the area is resized, the anchor fixes the component to a corner or edge.
+     *
      * @param anchor Anchor value
      * @return GBC object for chained calls
      */
@@ -99,6 +105,7 @@ public class GBC extends GridBagConstraints {
      * Set weights to determine how space should be distributed when resizing the window.
      * If no weight is defined, all components will clump together in their container's center.
      * Thus, to shift everything towards the edge of the container, a non-zero weight must be defined for at least the last element.
+     *
      * @param y vertical weight to distribute rows
      * @param x horizontal weight to distribute columns
      * @return GBC object for chained calls
