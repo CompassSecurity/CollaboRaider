@@ -46,9 +46,16 @@ public class CustomProxyRequestHandler implements ProxyRequestHandler {
                 continue;
 
             String target = payload.getKey();
+
+            // Apply payload replacement rules
             String value = payload.getValue()
                                   .replace("%s", collaboratorClient.generatePayload().toString())
                                   .replace("%h", interceptedRequest.headerValue("Host"));
+            if (interceptedRequest.hasHeader("Origin"))
+                value = value.replace("%o", interceptedRequest.headerValue("Origin"));
+            if (interceptedRequest.hasHeader("Referer"))
+                value = value.replace("%r", interceptedRequest.headerValue("Referer"));
+
 
             switch (payload.getType()) {
                 case HEADER:
