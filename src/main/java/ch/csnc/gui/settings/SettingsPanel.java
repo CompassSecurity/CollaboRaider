@@ -11,6 +11,9 @@ import java.awt.*;
  */
 public abstract class SettingsPanel extends JPanel {
     GridBagConstraints gbc;
+    int leftMargin = 15;
+    int bottomMargin = 15;
+    int bottomMarginInGroup = 5;
 
     public SettingsPanel(String name) {
         // Add border with text and padding
@@ -19,8 +22,8 @@ public abstract class SettingsPanel extends JPanel {
 
         // Set up basic constraints
         gbc = new GridBagConstraints();
-        // Align to top-left corner
-        gbc.anchor = GridBagConstraints.NORTHWEST;
+        // Align to left corner
+        gbc.anchor = GridBagConstraints.WEST;
         // Don't stretch elements
         gbc.fill = GridBagConstraints.NONE;
     }
