@@ -21,27 +21,27 @@ public class Payload {
         return type;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
     public void setType(PayloadType type) {
         this.type = type;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public void setKey(String key) {
         this.key = key;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
     }
 }
