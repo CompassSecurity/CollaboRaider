@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class PingbackTableModel extends AbstractTableModel
-{
+public class PingbackTableModel extends AbstractTableModel {
     private final List<Pingback> log;
 
     String[] columnNames = {
@@ -28,37 +27,31 @@ public class PingbackTableModel extends AbstractTableModel
             "Payload Target"        // 5
     };
 
-    public PingbackTableModel()
-    {
+    public PingbackTableModel() {
         this.log = new ArrayList<>();
     }
 
     @Override
-    public synchronized int getRowCount()
-    {
+    public synchronized int getRowCount() {
         return log.size();
     }
 
     @Override
-    public int getColumnCount()
-    {
+    public int getColumnCount() {
         return columnNames.length;
     }
 
     @Override
-    public String getColumnName(int column)
-    {
+    public String getColumnName(int column) {
         return columnNames[column];
     }
 
     @Override
-    public synchronized Object getValueAt(int rowIndex, int columnIndex)
-    {
+    public synchronized Object getValueAt(int rowIndex, int columnIndex) {
         Pingback entry = log.get(rowIndex);
 
         // could this be somehow moved to a list? List of functions that consume Pingback and return String?
-        return switch (columnIndex)
-        {
+        return switch (columnIndex) {
             case 0 -> entry.getLocalTimestamp();
             case 1 -> entry.getPingbackType();
             case 2 -> entry.getInteractionId();
@@ -69,15 +62,13 @@ public class PingbackTableModel extends AbstractTableModel
         };
     }
 
-    public synchronized void add(Pingback entry)
-    {
+    public synchronized void add(Pingback entry) {
         int index = log.size();
         log.add(entry);
         fireTableRowsInserted(index, index);
     }
 
-    public synchronized Pingback get(int rowIndex)
-    {
+    public synchronized Pingback get(int rowIndex) {
         return log.get(rowIndex);
     }
 }
