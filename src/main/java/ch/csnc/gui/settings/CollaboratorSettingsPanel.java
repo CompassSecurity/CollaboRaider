@@ -1,13 +1,12 @@
 package ch.csnc.gui.settings;
 
+import ch.csnc.settings.SettingsModel;
+
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 
-public class CollaboratorSettingsPanel extends SettingsPanel {
-    CollaboratorSettingsPanel() {
+public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
+    public CollaboratorSettingsPanel(SettingsModel settingsModel) {
         // Set title and create basic constraints
         super("Collaborator Settings");
 
@@ -20,16 +19,41 @@ public class CollaboratorSettingsPanel extends SettingsPanel {
         pollingIntervalLabel.setToolTipText(pollingIntervalTooltip);
         add(pollingIntervalLabel, gbc);
 
+        JLabel pollingIntervalChangedLabel = new JLabel("""
+                                                        <html>
+                                                        <i style="color:blue;">
+                                                        The new interval will take effect after reloading the extension.
+                                                        </i>
+                                                        </html>
+                                                        """);
+        pollingIntervalChangedLabel.putClientProperty("html.disable", null);
+        pollingIntervalChangedLabel.setVisible(false);
+
         gbc.gridx++;
         gbc.insets = new Insets(0, leftMargin, 15, 0);
-        JSpinner pollingIntervalSpinner = new JSpinner(new SpinnerNumberModel(5, 0, 3600, 1));
+        SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(settingsModel.getCollaboratorPollingInterval(),
+                                                                       0,
+                                                                       3600,
+                                                                       1);
+        JSpinner pollingIntervalSpinner = new JSpinner(spinnerNumberModel);
         pollingIntervalSpinner.setToolTipText(pollingIntervalTooltip);
+        pollingIntervalSpinner.addChangeListener(l -> {
+            if (pollingIntervalSpinner.getValue() != null) {
+                settingsModel.setCollaboratorPollingInterval((Integer) pollingIntervalSpinner.getValue());
+                pollingIntervalChangedLabel.setVisible(true);
+            }
+        });
         add(pollingIntervalSpinner, gbc);
 
+        gbc.gridx++;
+        gbc.weightx = 1;
+        add(pollingIntervalChangedLabel, gbc);
+
         // Observed IP addresses
-        String ipTooltip = "External IP addresses of your system. This is used to detect whether a pingback was caused by you or an external server.";
+        String ipTooltip = "External IP addresses of your system. This is used to distinguish whether a pingback was caused by you or by an external server.";
         gbc.gridy = 1;
         gbc.gridx = 0;
+        gbc.weightx = 0;
         gbc.gridheight = 2;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.insets = new Insets(0, 0, 0, 0);
@@ -39,12 +63,13 @@ public class CollaboratorSettingsPanel extends SettingsPanel {
 
         gbc.gridx = 1;
         gbc.gridheight = 1;
+        gbc.weightx = 1;
+        gbc.gridwidth = 2;
         gbc.insets = new Insets(0, leftMargin, 5, 0);
-        JLabel ipListLabel = new JLabel("<html>" +
-                                            "(HTTP) 178.197.206.195, " +
-                                            "(DNS) 193.135.111.5, " +
-                                            "(DNS) 193.135.111.5" +
-                                            "</html>");
+        JLabel ipListLabel = new JLabel();
+        settingsModel.ownIPAddresses.addObserver((o, arg) -> {
+            ipListLabel.setText("<html>" + settingsModel.ownIPAddresses.toString() + "</html>");
+        });
         ipListLabel.setToolTipText(ipTooltip);
         ipListLabel.putClientProperty("html.disable", null);
         add(ipListLabel, gbc);
@@ -55,6 +80,7 @@ public class CollaboratorSettingsPanel extends SettingsPanel {
         gbc.insets = new Insets(0, leftMargin, 0, 0);
         JButton ipRefreshButton = new JButton("Refresh");
         ipRefreshButton.setToolTipText("Refresh external IP addresses.");
+        ipRefreshButton.addActionListener(e -> settingsModel.sendCheckIpPayload());
         add(ipRefreshButton, gbc);
 
     }
