@@ -1,0 +1,60 @@
+package ch.csnc.gui.payloads;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class ButtonPanel extends JPanel {
+    public ButtonPanel(Runnable onClickAddButton,
+                       Runnable onClickRemoveButton,
+                       Runnable onClickUpButton,
+                       Runnable onClickDownButton,
+                       Runnable onClickImportButton,
+                       Runnable onClickExportButton) {
+        setLayout(new GridBagLayout());
+        // buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // Anchor to top-left corner
+        gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+
+        JButton addButton = new JButton("Add");
+        addButton.addActionListener(e -> onClickAddButton.run());
+        gbc.insets = new Insets(0, 0, 5, 0);
+        add(addButton, gbc);
+        gbc.gridy++;
+
+        JButton removeButton = new JButton("Remove");
+        removeButton.addActionListener(e -> onClickRemoveButton.run());
+        gbc.insets = new Insets(0, 0, 15, 0);
+        add(removeButton, gbc);
+        gbc.gridy++;
+
+        JButton upButton = new JButton("Up");
+        upButton.addActionListener(e -> onClickUpButton.run());
+        gbc.insets = new Insets(0, 0, 5, 0);
+        add(upButton, gbc);
+        gbc.gridy++;
+
+        JButton downButton = new JButton("Down");
+        downButton.addActionListener(e -> onClickDownButton.run());
+        gbc.insets = new Insets(0, 0, 15, 0);
+        add(downButton, gbc);
+        gbc.gridy++;
+
+        JButton importButton = new JButton("Import");
+        importButton.addActionListener(e -> onClickImportButton.run());
+        gbc.insets = new Insets(0, 0, 5, 0);
+        add(importButton, gbc);
+        gbc.gridy++;
+
+        JButton exportButton = new JButton("Export");
+        exportButton.addActionListener(e -> onClickExportButton.run());
+        gbc.insets = new Insets(0, 0, 15, 0);
+        // Set y-weight of last component to 1 for vertical adjustment
+        //gbc.weighty = 1.0;
+        add(exportButton, gbc);
+    }
+}
