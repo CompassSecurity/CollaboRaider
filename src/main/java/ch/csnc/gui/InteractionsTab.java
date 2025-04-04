@@ -1,15 +1,14 @@
-package ch.csnc.gui.interactions;
+package ch.csnc.gui;
 
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.collaborator.InteractionType;
 import burp.api.montoya.core.ByteArray;
-import burp.api.montoya.core.Marker;
-import burp.api.montoya.http.message.HttpRequestResponse;
-import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.ui.UserInterface;
 import burp.api.montoya.ui.editor.*;
+import ch.csnc.gui.interactions.DescriptionViewer;
 import ch.csnc.interaction.PingbackTableModel;
 import ch.csnc.interaction.Pingback;
+import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import java.util.HashMap;
 public class InteractionsTab extends JSplitPane {
     public final String TAB_TITLE = "Interactions";
     private final MontoyaApi api;
+    private final SettingsModel settingsModel;
 
     DescriptionViewer descriptionViewer;
     HttpRequestEditor requestViewer;
@@ -28,8 +28,10 @@ public class InteractionsTab extends JSplitPane {
     JTable table;
     JTabbedPane tabbedPane;
 
-    public InteractionsTab(MontoyaApi api, PingbackTableModel tableModel) {
+    public InteractionsTab(MontoyaApi api, PingbackTableModel tableModel, SettingsModel settingsModel) {
         this.api = api;
+        this.settingsModel = settingsModel;
+
         setName(TAB_TITLE);
 
         // Define split pane
