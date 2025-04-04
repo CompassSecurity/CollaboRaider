@@ -4,8 +4,8 @@ import ch.csnc.gui.GBC;
 
 import javax.swing.*;
 
-public class AboutPanel extends SettingsPanel {
-    AboutPanel() {
+public class AboutPanel extends AbstractSettingsPanel {
+    public AboutPanel() {
         super("About");
 
         add(new JLabel("Version:"),
