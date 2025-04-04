@@ -1,17 +1,15 @@
-package ch.csnc.gui.settings;
+package ch.csnc.gui;
 
-import burp.api.montoya.core.HighlightColor;
+import ch.csnc.gui.settings.*;
+import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 public class SettingsTab extends JPanel {
     public final String TAB_TITLE = "Settings";
 
-    public SettingsTab() {
+    public SettingsTab(SettingsModel settingsModel) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -26,16 +24,16 @@ public class SettingsTab extends JPanel {
         gbc.insets = new Insets(15, 10, 0, 10);
 
         gbc.gridy = 0;
-        add(new CollaboratorSettingsPanel(), gbc);
+        add(new CollaboratorSettingsPanel(settingsModel), gbc);
 
         gbc.gridy++;
-        add(new InteractionsSettingsPanel(), gbc);
+        add(new InteractionsSettingsPanel(settingsModel), gbc);
 
         gbc.gridy++;
-        add(new ProxySettingsPanel(), gbc);
+        add(new ProxySettingsPanel(settingsModel), gbc);
 
         gbc.gridy++;
-        add(new ExportSettingsPanel(), gbc);
+        add(new ExportSettingsPanel(settingsModel), gbc);
 
         gbc.gridy++;
         gbc.weighty = 1; // Add weight to last element so that everything is shifted towards the anchor point
