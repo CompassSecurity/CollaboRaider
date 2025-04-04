@@ -6,39 +6,36 @@ import burp.api.montoya.collaborator.Interaction;
 import burp.api.montoya.proxy.ProxyHttpRequestResponse;
 import ch.csnc.settings.SettingsModel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class PingbackHandler {
     private final MontoyaApi montoyaApi;
     private final PingbackTableModel tableModel;
-    private final String collaboratorServerAddress;
-    private final CollaboratorPayload checkIpPayload;
-    private final List<String> ownIPAddresses;
+    private final SettingsModel settings;
 
     public PingbackHandler(MontoyaApi montoyaApi,
                            PingbackTableModel tableModel,
-                           String collaboratorServerAddress,
-                           CollaboratorPayload checkIpPayload) {
+                           SettingsModel settings) {
         this.montoyaApi = montoyaApi;
         this.tableModel = tableModel;
-        this.collaboratorServerAddress = collaboratorServerAddress;
-        this.checkIpPayload = checkIpPayload;
+        this.settings = settings;
 
         // Initialize list to hold own IP addresses
-        ownIPAddresses = new ArrayList<>();
+        // settings.ownIPAddresses.init();
+        //settings.ownIPAddresses = new ArrayList<>();
     }
 
     public void handleInteraction(Interaction interaction) {
 
         // Check if the interaction was caused by the initial request to determine the own IP address
-        if (Objects.equals(interaction.id().toString(), checkIpPayload.id().toString())) {
+        if (Objects.equals(interaction.id().toString(), settings.getCheckIpPayload().id().toString())) {
 
             montoyaApi.logging()
                       .logToOutput("Own IP (%s): %s".formatted(interaction.type().name(),
                                                                interaction.clientIp().getHostAddress()));
-            ownIPAddresses.add(interaction.clientIp().getHostAddress());
+            // settings.ownIPAddresses.add(interaction.clientIp().getHostAddress());
+            settings.ownIPAddresses.add(interaction.clientIp().getHostAddress());
             return;
         }
 
@@ -52,10 +49,11 @@ public class PingbackHandler {
 
         // Log to output
         montoyaApi.logging()
-                  .logToOutput(String.format("Got interaction %s (%s) from IP %s. Found %d corresponding responses",
+                  .logToOutput(String.format("Got interaction %s (%s) from IP %s. Own id is %s. Found %d corresponding responses",
                                              interaction.type().name(),
                                              interaction.id(),
                                              interaction.clientIp(),
+                                             settings.getCheckIpPayload().id().toString(),
                                              proxyList.size()));
 
         // Process each request
@@ -66,12 +64,13 @@ public class PingbackHandler {
     }
 
     private void processInteractionWithProxyItem(Interaction interaction, ProxyHttpRequestResponse item) {
-        String fullCollaboratorURL = interaction.id().toString() + "." + collaboratorServerAddress;
+        //String fullCollaboratorURL = interaction.id().toString() + "." + collaboratorServerAddress;
 
         // Check if this pingback came from the own IP
-        boolean fromOwnIP = ownIPAddresses.contains(interaction.clientIp().getHostAddress());
+        //boolean fromOwnIP = settings.ownIPAddresses.contains(interaction.clientIp().getHostAddress());
+        boolean fromOwnIP = settings.ownIPAddresses.contains(interaction.clientIp().getHostAddress());
         // If setting is enabled, ignore this request
-        if (fromOwnIP && SettingsModel.getInstance().actionForOwnIP == SettingsModel.ActionForOwnIP.DROP) {
+        if (fromOwnIP && settings.getActionForOwnIP() == SettingsModel.ActionForOwnIP.DROP) {
             return;
         }
 
@@ -82,11 +81,14 @@ public class PingbackHandler {
         montoyaApi.logging().logToOutput(" -> #entries: " + tableModel.getRowCount());
 
         // Set comment and highlight in Proxy tab (if enabled)
-        item.annotations()
-            .setNotes("CollaboRaider: Received %s pingback for %s %s".formatted(interaction.type().name(),
-                                                                                pingback.getPayloadType(),
-                                                                                pingback.getPayloadKey()));
-        item.annotations().setHighlightColor(SettingsModel.getInstance().proxyHighlightColor);
+        if (settings.getCommentsEnabled()) {
+            item.annotations()
+                .setNotes("CollaboRaider: Received %s pingback for %s %s".formatted(interaction.type().name(),
+                                                                                    pingback.getPayloadType(),
+                                                                                    pingback.getPayloadKey()));
+        }
+
+        item.annotations().setHighlightColor(settings.getProxyHighlightColor());
 
         // Create audit issue
         PingbackAuditIssue issue = new PingbackAuditIssue(pingback);
