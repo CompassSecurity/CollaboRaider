@@ -16,24 +16,28 @@ public class BackgroundPoll {
     private final PingbackHandler pingbackHandler;
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private ScheduledFuture<?> schedule;
+    private final int pollingInterval;
 
-    public BackgroundPoll(CollaboratorClient collaboratorClient, Logging logging, PingbackHandler pingbackHandler) {
+    public BackgroundPoll(CollaboratorClient collaboratorClient, Logging logging, PingbackHandler pingbackHandler, int pollingInterval) {
         this.collaboratorClient = collaboratorClient;
         this.logging = logging;
         this.pingbackHandler = pingbackHandler;
+        this.pollingInterval = pollingInterval;
     }
 
     public void execute() {
-        // logging.logToOutput("Polling...");
-        List<Interaction> interactions = collaboratorClient.getAllInteractions();
-        for (Interaction interaction : interactions) {
-            pingbackHandler.handleInteraction(interaction);
+        if (!schedule.isCancelled()) {
+            List<Interaction> interactions = collaboratorClient.getAllInteractions();
+            // logging.logToOutput("Polling. Got %d interactions".formatted(interactions.size()));
+            for (Interaction interaction : interactions) {
+                pingbackHandler.handleInteraction(interaction);
+            }
         }
     }
 
     public void start() {
         scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
-        schedule = scheduledThreadPoolExecutor.scheduleAtFixedRate(this::execute, 0, 5, TimeUnit.SECONDS);
+        schedule = scheduledThreadPoolExecutor.scheduleAtFixedRate(this::execute, 0, pollingInterval, TimeUnit.SECONDS);
     }
 
     public void stop() {
