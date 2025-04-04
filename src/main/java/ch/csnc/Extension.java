@@ -2,19 +2,14 @@ package ch.csnc;
 
 import burp.api.montoya.BurpExtension;
 import burp.api.montoya.MontoyaApi;
-import burp.api.montoya.collaborator.CollaboratorClient;
-import burp.api.montoya.collaborator.CollaboratorPayload;
-import burp.api.montoya.collaborator.SecretKey;
-import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.logging.Logging;
-import burp.api.montoya.persistence.PersistedObject;
-import burp.api.montoya.persistence.Preferences;
+import ch.csnc.gui.MainTab;
 import ch.csnc.interaction.PingbackHandler;
 import ch.csnc.interaction.PingbackTableModel;
 import ch.csnc.payload.Payload;
 import ch.csnc.payload.PayloadType;
 import ch.csnc.payload.PayloadsTableModel;
-import ch.csnc.gui.MainTab;
+import ch.csnc.settings.SettingsModel;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -23,8 +18,6 @@ import java.util.*;
 public class Extension implements BurpExtension {
     public static final String name = "CollaboRaider";
     public static final String version = "0.1";
-
-    private final String KEY_COLLABORATOR_SECRET = "persistent_collaborator_secret_key";
 
     private MontoyaApi montoyaApi;
     private Logging logging;
@@ -50,53 +43,34 @@ public class Extension implements BurpExtension {
         }
 
         // Load Settings
+        SettingsModel settingsModel = new SettingsModel(montoyaApi);
         List<Payload> settings = loadStoredPayloads();
         PayloadsTableModel payloadsTableModel = new PayloadsTableModel(settings);
 
-        // Get persisted data
-        PersistedObject persistedObject = montoyaApi.persistence().extensionData();
-        Preferences preferences = montoyaApi.persistence().preferences();
-
-        // Create CollaboratorClient
-        String storedCollaboratorKey = persistedObject.getString(KEY_COLLABORATOR_SECRET);
-        CollaboratorClient collaboratorClient;
-        if (storedCollaboratorKey == null) {
-            collaboratorClient = montoyaApi.collaborator().createClient();
-            String secretKey = collaboratorClient.getSecretKey().toString();
-            persistedObject.setString(KEY_COLLABORATOR_SECRET, secretKey);
-            logging.logToOutput("Created new CollaboratorClient with secret key " + collaboratorClient.getSecretKey());
-        } else {
-            String secretKey = persistedObject.getString(KEY_COLLABORATOR_SECRET);
-            collaboratorClient = montoyaApi.collaborator().restoreClient(SecretKey.secretKey(secretKey));
-            logging.logToOutput("Restored CollaboratorClient with existing secret key " + collaboratorClient.getSecretKey());
-        }
-        logging.logToOutput("Collaborator server: " + collaboratorClient.server().address());
-
         // Check own IP by sending a request to the Collaborator server
-        CollaboratorPayload checkIpPayload = collaboratorClient.generatePayload();
-
-        String collaboratorURL = "http://" + checkIpPayload.toString();
-        logging.logToOutput("Send request to " + collaboratorURL);
-        HttpRequest checkIPRequest = HttpRequest.httpRequestFromUrl(collaboratorURL);
-        montoyaApi.http().sendRequest(checkIPRequest);
-
+        settingsModel.sendCheckIpPayload();
 
         // Create Interaction handler which processes events
         PingbackTableModel tableModel = new PingbackTableModel();
         PingbackHandler pingbackHandler = new PingbackHandler(montoyaApi,
                                                               tableModel,
-                                                              collaboratorClient.server().address(),
-                                                              checkIpPayload);
+                                                              settingsModel);
 
         // Polling
-        BackgroundPoll backgroundPoll = new BackgroundPoll(collaboratorClient, logging, pingbackHandler);
+        BackgroundPoll backgroundPoll = new BackgroundPoll(settingsModel.getCollaboratorClient(),
+                                                           logging,
+                                                           pingbackHandler,
+                                                           settingsModel.getCollaboratorPollingInterval());
         backgroundPoll.start();
 
         // Register new tab in UI
-        montoyaApi.userInterface().registerSuiteTab(name, new MainTab(montoyaApi, tableModel, payloadsTableModel));
+        montoyaApi.userInterface()
+                  .registerSuiteTab(name, new MainTab(montoyaApi, tableModel, payloadsTableModel, settingsModel));
 
         // Register Proxy handler
-        montoyaApi.proxy().registerRequestHandler(new CustomProxyRequestHandler(logging, collaboratorClient, settings));
+        montoyaApi.proxy().registerRequestHandler(new CustomProxyRequestHandler(logging,
+                                                                                settingsModel.getCollaboratorClient(),
+                                                                                settings));
 
         // Register unload callback
         montoyaApi.extension().registerUnloadingHandler(() -> {
