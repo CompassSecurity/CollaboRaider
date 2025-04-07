@@ -30,11 +30,12 @@ public class PayloadsTab extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
 
         JPanel buttonPanel = new ButtonPanel(this::onClickAddButton,
-                                             this::onClickRemoveButton,
-                                             null,
-                                             null,
-                                             null,
-                                             null);
+                                             this::onClickRemoveButton
+                                             //null,
+                                             //null,
+                                             //null,
+                                             //null
+                                             );
         JScrollPane tablePanel = createTablePanel();
         JLabel descriptionLabel = new DescriptionLabel();
 

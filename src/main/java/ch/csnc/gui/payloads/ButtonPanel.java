@@ -5,11 +5,12 @@ import java.awt.*;
 
 public class ButtonPanel extends JPanel {
     public ButtonPanel(Runnable onClickAddButton,
-                       Runnable onClickRemoveButton,
-                       Runnable onClickUpButton,
-                       Runnable onClickDownButton,
-                       Runnable onClickImportButton,
-                       Runnable onClickExportButton) {
+                       Runnable onClickRemoveButton
+                       //Runnable onClickUpButton,
+                       //Runnable onClickDownButton,
+                       //Runnable onClickImportButton,
+                       //Runnable onClickExportButton
+                       ) {
         setLayout(new GridBagLayout());
         // buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -32,6 +33,7 @@ public class ButtonPanel extends JPanel {
         add(removeButton, gbc);
         gbc.gridy++;
 
+        /*
         JButton upButton = new JButton("Up");
         upButton.addActionListener(e -> onClickUpButton.run());
         gbc.insets = new Insets(0, 0, 5, 0);
@@ -56,5 +58,6 @@ public class ButtonPanel extends JPanel {
         // Set y-weight of last component to 1 for vertical adjustment
         //gbc.weighty = 1.0;
         add(exportButton, gbc);
+         */
     }
 }
