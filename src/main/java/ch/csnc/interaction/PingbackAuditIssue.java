@@ -55,7 +55,7 @@ public class PingbackAuditIssue implements AuditIssue {
     @Override
     public AuditIssueSeverity severity() {
         if (pingback.fromOwnIP)
-            return AuditIssueSeverity.MEDIUM;
+            return AuditIssueSeverity.LOW;
         else
             return AuditIssueSeverity.HIGH;
     }
