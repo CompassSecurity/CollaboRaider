@@ -3,9 +3,11 @@ package ch.csnc.interaction;
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.collaborator.CollaboratorPayload;
 import burp.api.montoya.collaborator.Interaction;
+import burp.api.montoya.persistence.PersistedObject;
 import burp.api.montoya.proxy.ProxyHttpRequestResponse;
 import ch.csnc.settings.SettingsModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,15 +17,31 @@ public class PingbackHandler {
     private final SettingsModel settings;
 
     public PingbackHandler(MontoyaApi montoyaApi,
-                           PingbackTableModel tableModel,
                            SettingsModel settings) {
         this.montoyaApi = montoyaApi;
-        this.tableModel = tableModel;
         this.settings = settings;
 
         // Initialize list to hold own IP addresses
         // settings.ownIPAddresses.init();
         //settings.ownIPAddresses = new ArrayList<>();
+
+        // Initialize table model with previously stored interactions
+        if (montoyaApi.persistence().extensionData().getInteger("KEY_NUM_PINGBACKS") != null) {
+            int numRows = montoyaApi.persistence().extensionData().getInteger("KEY_NUM_PINGBACKS");
+            List<Pingback> pingbacks = new ArrayList<>(numRows);
+            for (int i=0; i<numRows; ++i) {
+                PersistedObject object = montoyaApi.persistence().extensionData().getChildObject("KEY_PINGBACK_ROW_" + i);
+                Pingback pingback = Pingback.fromPersistence(object);
+                pingbacks.add(i, pingback);
+            }
+            tableModel = new PingbackTableModel(pingbacks);
+        } else {
+            tableModel = new PingbackTableModel();
+        }
+    }
+
+    public PingbackTableModel getTableModel() {
+        return tableModel;
     }
 
     public void handleInteraction(Interaction interaction) {
@@ -75,8 +93,17 @@ public class PingbackHandler {
         }
 
         // Add to table
-        Pingback pingback = new Pingback(item, interaction, fromOwnIP);
+        Pingback pingback = new Pingback(item.finalRequest(), item.response(), item.time(), interaction, fromOwnIP);
         tableModel.add(pingback);
+
+        // Add to persistence
+        int numRows = 0;
+        if (montoyaApi.persistence().extensionData().getInteger("KEY_NUM_PINGBACKS") != null) {
+            numRows = montoyaApi.persistence().extensionData().getInteger("KEY_NUM_PINGBACKS");
+        }
+        montoyaApi.persistence().extensionData().setChildObject("KEY_PINGBACK_ROW_" + numRows, pingback.toPersistence());
+        montoyaApi.persistence().extensionData().setInteger("KEY_NUM_PINGBACKS", ++numRows);
+
         montoyaApi.logging().logToOutput(" -> added to table.");
         montoyaApi.logging().logToOutput(" -> #entries: " + tableModel.getRowCount());
 

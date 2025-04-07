@@ -6,7 +6,6 @@ import burp.api.montoya.logging.Logging;
 import burp.api.montoya.persistence.Preferences;
 import ch.csnc.gui.MainTab;
 import ch.csnc.interaction.PingbackHandler;
-import ch.csnc.interaction.PingbackTableModel;
 import ch.csnc.payload.Payload;
 import ch.csnc.payload.PayloadType;
 import ch.csnc.payload.PayloadsTableModel;
@@ -47,20 +46,20 @@ public class Extension implements BurpExtension {
         Preferences preferences = montoyaApi.persistence().preferences();
         SettingsModel settingsModel = new SettingsModel(montoyaApi);
 
-        List<Payload> settings;
+        List<Payload> payloadSettings;
         if (preferences.getInteger("KEY_NUM_ROWS") != null) {
-            settings = loadPayloadsFromPersistence(preferences);
+            payloadSettings = loadPayloadsFromPersistence(preferences);
         } else {
-            settings = loadStoredPayloads();
+            payloadSettings = loadStoredPayloads();
         }
 
-        PayloadsTableModel payloadsTableModel = new PayloadsTableModel(settings);
+        PayloadsTableModel payloadsTableModel = new PayloadsTableModel(payloadSettings);
         // Get notified if something changes and store the table
         payloadsTableModel.addTableModelListener(e -> {
             logging.logToOutput("TableModelEvent " + e.getType());
             int numRows = payloadsTableModel.getRowCount();
             preferences.setInteger("KEY_NUM_ROWS", numRows);
-            for (int i=0; i<numRows; ++i) {
+            for (int i = 0; i < numRows; ++i) {
                 preferences.setString("KEY_ROWS_" + i, payloadsTableModel.get(i).toString());
             }
         });
@@ -68,10 +67,9 @@ public class Extension implements BurpExtension {
         // Check own IP by sending a request to the Collaborator server
         settingsModel.sendCheckIpPayload();
 
+
         // Create Interaction handler which processes events
-        PingbackTableModel pingbackTableModel = new PingbackTableModel();
         PingbackHandler pingbackHandler = new PingbackHandler(montoyaApi,
-                                                              pingbackTableModel,
                                                               settingsModel);
 
         // Polling
@@ -83,12 +81,16 @@ public class Extension implements BurpExtension {
 
         // Register new tab in UI
         montoyaApi.userInterface()
-                  .registerSuiteTab(name, new MainTab(montoyaApi, pingbackTableModel, payloadsTableModel, settingsModel));
+                  .registerSuiteTab(name,
+                                    new MainTab(montoyaApi,
+                                                pingbackHandler.getTableModel(),
+                                                payloadsTableModel,
+                                                settingsModel));
 
         // Register Proxy handler
         montoyaApi.proxy().registerRequestHandler(new CustomProxyRequestHandler(logging,
                                                                                 settingsModel.getCollaboratorClient(),
-                                                                                settings));
+                                                                                payloadSettings));
 
         // Register unload callback
         montoyaApi.extension().registerUnloadingHandler(() -> {
@@ -100,9 +102,9 @@ public class Extension implements BurpExtension {
     public List<Payload> loadPayloadsFromPersistence(Preferences preferences) {
         int numRows = preferences.getInteger("KEY_NUM_ROWS");
         List<Payload> settings = new ArrayList<>(numRows);
-        for (int i=0; i<numRows; ++i) {
+        for (int i = 0; i < numRows; ++i) {
             String serialized = preferences.getString("KEY_ROWS_" + i);
-            logging.logToOutput("restore " + serialized);
+            // logging.logToOutput("restore " + serialized);
             Payload payload = Payload.fromString(serialized);
             settings.add(i, payload);
         }

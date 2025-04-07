@@ -1,22 +1,27 @@
 package ch.csnc.interaction;
 
-import burp.api.montoya.collaborator.Interaction;
-import burp.api.montoya.collaborator.InteractionType;
+import burp.api.montoya.collaborator.*;
+import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.http.HttpProtocol;
 import burp.api.montoya.http.message.HttpHeader;
+import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.http.message.params.HttpParameterType;
 import burp.api.montoya.http.message.params.ParsedHttpParameter;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
-import burp.api.montoya.proxy.ProxyHttpRequestResponse;
+import burp.api.montoya.persistence.PersistedObject;
 import ch.csnc.Utils;
 import ch.csnc.payload.PayloadType;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Pingback {
     public HttpRequest request;
@@ -28,10 +33,10 @@ public class Pingback {
     PayloadType payloadType;
 
 
-    public Pingback(ProxyHttpRequestResponse item, Interaction interaction, boolean fromOwnIP) {
-        this.request = item.finalRequest();
-        this.response = item.response();
-        this.requestTime = item.time();
+    public Pingback(HttpRequest request, HttpResponse response, ZonedDateTime requestTime, Interaction interaction, boolean fromOwnIP) {
+        this.request = request;
+        this.response = response;
+        this.requestTime = requestTime;
         this.interaction = interaction;
         this.fromOwnIP = fromOwnIP;
 
@@ -159,5 +164,174 @@ public class Pingback {
         }
 
         return data;
+    }
+
+    private final static String PERSISTENCE_KEY_REQUEST = "PINGBACK_ORIGINAL_REQUEST";
+    private final static String PERSISTENCE_KEY_RESPONSE = "PINGBACK_ORIGINAL_RESPONSE";
+    private final static String PERSISTENCE_KEY_TIMESTAMP = "PINGBACK_REQUEST_TIMESTAMP";
+    private final static String PERSISTENCE_KEY_OWN_IP = "PINGBACK_OWN_IP";
+    private final static String PERSISTENCE_KEY_INTERACTION_ID = "PINGBACK_INTERACTION_ID";
+    private final static String PERSISTENCE_KEY_INTERACTION_TYPE = "PINGBACK_INTERACTION_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_TIMESTAMP = "PINGBACK_INTERACTION_TIMESTAMP";
+    private final static String PERSISTENCE_KEY_INTERACTION_IP = "PINGBACK_INTERACTION_IP";
+    private final static String PERSISTENCE_KEY_INTERACTION_PORT = "PINGBACK_INTERACTION_PORT";
+    private final static String PERSISTENCE_KEY_INTERACTION_DNS_TYPE = "PINGBACK_INTERACTION_DNS_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_DNS_RAW = "PINGBACK_INTERACTION_DNS_RAW";
+    private final static String PERSISTENCE_KEY_INTERACTION_HTTP_PROTOCOL = "PINGBACK_INTERACTION_HTTP_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_HTTP_REQRSP = "PINGBACK_INTERACTION_HTTP_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_SMTP_PROTOCOL = "PINGBACK_INTERACTION_SMTP_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_SMTP_CONVERSATION = "PINGBACK_INTERACTION_SMTP_CONVERSATION";
+    private final static String PERSISTENCE_KEY_INTERACTION_CUSTOM_DATA = "PINGBACK_INTERACTION_CUSTOM_DATA";
+
+    public PersistedObject toPersistence() {
+        PersistedObject persistedObject = PersistedObject.persistedObject();
+        persistedObject.setHttpRequest(PERSISTENCE_KEY_REQUEST, request);
+        persistedObject.setHttpResponse(PERSISTENCE_KEY_RESPONSE, response);
+        persistedObject.setString(PERSISTENCE_KEY_TIMESTAMP, requestTime.toString());
+        persistedObject.setBoolean(PERSISTENCE_KEY_OWN_IP, fromOwnIP);
+        // Store interaction
+        persistedObject.setString(PERSISTENCE_KEY_INTERACTION_ID, interaction.id().toString());
+        persistedObject.setString(PERSISTENCE_KEY_INTERACTION_TYPE, interaction.type().name());
+        persistedObject.setString(PERSISTENCE_KEY_INTERACTION_TIMESTAMP, interaction.timeStamp().toString());
+        persistedObject.setByteArray(PERSISTENCE_KEY_INTERACTION_IP,
+                                     ByteArray.byteArray(interaction.clientIp().getAddress()));
+        persistedObject.setInteger(PERSISTENCE_KEY_INTERACTION_PORT, interaction.clientPort());
+        // DNS
+        if (interaction.type() == InteractionType.DNS && interaction.dnsDetails().isPresent()) {
+            DnsDetails details = interaction.dnsDetails().get();
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_DNS_TYPE, details.queryType().name());
+            persistedObject.setByteArray(PERSISTENCE_KEY_INTERACTION_DNS_RAW, details.query());
+        }
+        // HTTP
+        else if(interaction.type() == InteractionType.HTTP && interaction.httpDetails().isPresent()) {
+            HttpDetails details = interaction.httpDetails().get();
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_HTTP_PROTOCOL, details.protocol().name());
+            persistedObject.setHttpRequestResponse(PERSISTENCE_KEY_INTERACTION_HTTP_REQRSP, details.requestResponse());
+        }
+        // SMTP
+        else if(interaction.type() == InteractionType.SMTP && interaction.smtpDetails().isPresent()) {
+            SmtpDetails details = interaction.smtpDetails().get();
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_SMTP_PROTOCOL, details.protocol().name());
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_SMTP_CONVERSATION, details.conversation());
+        }
+        // Custom data
+        if (interaction.customData().isPresent()) {
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_CUSTOM_DATA, interaction.customData().get());
+        }
+
+        return persistedObject;
+    }
+
+    public static Pingback fromPersistence(PersistedObject persistedObject) {
+        HttpRequest request = persistedObject.getHttpRequest(PERSISTENCE_KEY_REQUEST);
+        HttpResponse response = persistedObject.getHttpResponse(PERSISTENCE_KEY_RESPONSE);
+        ZonedDateTime timestamp = ZonedDateTime.parse(persistedObject.getString(PERSISTENCE_KEY_TIMESTAMP));
+        Boolean fromOwnIp = persistedObject.getBoolean(PERSISTENCE_KEY_OWN_IP);
+
+        Interaction interaction = new Interaction() {
+            @Override
+            public InteractionId id() {
+                return new InteractionId() {
+                    @Override
+                    public String toString() {
+                        return persistedObject.getString(PERSISTENCE_KEY_INTERACTION_ID);
+                    }
+                };
+            }
+
+            @Override
+            public InteractionType type() {
+                return InteractionType.valueOf(persistedObject.getString(PERSISTENCE_KEY_INTERACTION_TYPE));
+            }
+
+            @Override
+            public ZonedDateTime timeStamp() {
+                return ZonedDateTime.parse(persistedObject.getString(PERSISTENCE_KEY_INTERACTION_TIMESTAMP));
+            }
+
+            @Override
+            public InetAddress clientIp() {
+                try {
+                    return InetAddress.getByAddress(persistedObject.getByteArray(PERSISTENCE_KEY_INTERACTION_IP).getBytes());
+                } catch (UnknownHostException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public int clientPort() {
+                return persistedObject.getInteger(PERSISTENCE_KEY_INTERACTION_PORT);
+            }
+
+            @Override
+            public Optional<DnsDetails> dnsDetails() {
+                if (type() == InteractionType.DNS) {
+                    return Optional.of(new DnsDetails() {
+                        @Override
+                        public DnsQueryType queryType() {
+                            return DnsQueryType.valueOf(persistedObject.getString(PERSISTENCE_KEY_INTERACTION_DNS_TYPE));
+                        }
+
+                        @Override
+                        public ByteArray query() {
+                            return persistedObject.getByteArray(PERSISTENCE_KEY_INTERACTION_DNS_RAW);
+                        }
+                    });
+                } else {
+                    return Optional.empty();
+                }
+            }
+
+            @Override
+            public Optional<HttpDetails> httpDetails() {
+                if (type() == InteractionType.HTTP) {
+                    return Optional.of(new HttpDetails() {
+                        @Override
+                        public HttpProtocol protocol() {
+                            return HttpProtocol.valueOf(persistedObject.getString(
+                                    PERSISTENCE_KEY_INTERACTION_HTTP_PROTOCOL));
+                        }
+
+                        @Override
+                        public HttpRequestResponse requestResponse() {
+                            return persistedObject.getHttpRequestResponse(PERSISTENCE_KEY_INTERACTION_HTTP_REQRSP);
+                        }
+                    });
+                } else {
+                    return Optional.empty();
+                }
+            }
+
+            @Override
+            public Optional<SmtpDetails> smtpDetails() {
+                if (type() == InteractionType.SMTP) {
+                    return Optional.of(new SmtpDetails() {
+                        @Override
+                        public SmtpProtocol protocol() {
+                            return SmtpProtocol.valueOf(persistedObject.getString(
+                                    PERSISTENCE_KEY_INTERACTION_SMTP_PROTOCOL));
+                        }
+
+                        @Override
+                        public String conversation() {
+                            return persistedObject.getString(PERSISTENCE_KEY_INTERACTION_SMTP_CONVERSATION);
+                        }
+                    });
+                } else {
+                    return Optional.empty();
+                }
+            }
+
+            @Override
+            public Optional<String> customData() {
+                if (persistedObject.getString(PERSISTENCE_KEY_INTERACTION_CUSTOM_DATA) != null)
+                    return Optional.of(persistedObject.getString(PERSISTENCE_KEY_INTERACTION_CUSTOM_DATA));
+                else {
+                    return Optional.empty();
+                }
+            }
+        };
+
+        return new Pingback(request, response, timestamp, interaction, fromOwnIp);
     }
 }
