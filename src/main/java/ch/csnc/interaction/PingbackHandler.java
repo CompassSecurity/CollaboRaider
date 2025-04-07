@@ -1,7 +1,6 @@
 package ch.csnc.interaction;
 
 import burp.api.montoya.MontoyaApi;
-import burp.api.montoya.collaborator.CollaboratorPayload;
 import burp.api.montoya.collaborator.Interaction;
 import burp.api.montoya.persistence.PersistedObject;
 import burp.api.montoya.proxy.ProxyHttpRequestResponse;
@@ -16,21 +15,21 @@ public class PingbackHandler {
     private final PingbackTableModel tableModel;
     private final SettingsModel settings;
 
+    private final String KEY_PINGBACK_NUM_ROWS = "PREFERENCES_KEY_PINGBACK_NUM_ROWS";
+    private final String KEY_PINGBACK_ROW = "KEY_PINGBACK_ROW_";
+
     public PingbackHandler(MontoyaApi montoyaApi,
                            SettingsModel settings) {
         this.montoyaApi = montoyaApi;
         this.settings = settings;
 
-        // Initialize list to hold own IP addresses
-        // settings.ownIPAddresses.init();
-        //settings.ownIPAddresses = new ArrayList<>();
 
         // Initialize table model with previously stored interactions
-        if (montoyaApi.persistence().extensionData().getInteger("KEY_NUM_PINGBACKS") != null) {
-            int numRows = montoyaApi.persistence().extensionData().getInteger("KEY_NUM_PINGBACKS");
+        if (montoyaApi.persistence().extensionData().getInteger(KEY_PINGBACK_NUM_ROWS) != null) {
+            int numRows = montoyaApi.persistence().extensionData().getInteger(KEY_PINGBACK_NUM_ROWS);
             List<Pingback> pingbacks = new ArrayList<>(numRows);
-            for (int i=0; i<numRows; ++i) {
-                PersistedObject object = montoyaApi.persistence().extensionData().getChildObject("KEY_PINGBACK_ROW_" + i);
+            for (int i = 0; i < numRows; ++i) {
+                PersistedObject object = montoyaApi.persistence().extensionData().getChildObject(KEY_PINGBACK_ROW + i);
                 Pingback pingback = Pingback.fromPersistence(object);
                 pingbacks.add(i, pingback);
             }
@@ -67,12 +66,13 @@ public class PingbackHandler {
 
         // Log to output
         montoyaApi.logging()
-                  .logToOutput(String.format("Got interaction %s (%s) from IP %s. Own id is %s. Found %d corresponding responses",
-                                             interaction.type().name(),
-                                             interaction.id(),
-                                             interaction.clientIp(),
-                                             settings.getCheckIpPayload().id().toString(),
-                                             proxyList.size()));
+                  .logToOutput(String.format(
+                          "Got interaction %s (%s) from IP %s. Own id is %s. Found %d corresponding responses",
+                          interaction.type().name(),
+                          interaction.id(),
+                          interaction.clientIp(),
+                          settings.getCheckIpPayload().id().toString(),
+                          proxyList.size()));
 
         // Process each request
         for (ProxyHttpRequestResponse item : proxyList) {
@@ -82,10 +82,8 @@ public class PingbackHandler {
     }
 
     private void processInteractionWithProxyItem(Interaction interaction, ProxyHttpRequestResponse item) {
-        //String fullCollaboratorURL = interaction.id().toString() + "." + collaboratorServerAddress;
 
-        // Check if this pingback came from the own IP
-        //boolean fromOwnIP = settings.ownIPAddresses.contains(interaction.clientIp().getHostAddress());
+        // Check if this pingback came from own IP
         boolean fromOwnIP = settings.ownIPAddresses.contains(interaction.clientIp().getHostAddress());
         // If setting is enabled, ignore this request
         if (fromOwnIP && settings.getActionForOwnIP() == SettingsModel.ActionForOwnIP.DROP) {
@@ -98,11 +96,11 @@ public class PingbackHandler {
 
         // Add to persistence
         int numRows = 0;
-        if (montoyaApi.persistence().extensionData().getInteger("KEY_NUM_PINGBACKS") != null) {
-            numRows = montoyaApi.persistence().extensionData().getInteger("KEY_NUM_PINGBACKS");
+        if (montoyaApi.persistence().extensionData().getInteger(KEY_PINGBACK_NUM_ROWS) != null) {
+            numRows = montoyaApi.persistence().extensionData().getInteger(KEY_PINGBACK_NUM_ROWS);
         }
-        montoyaApi.persistence().extensionData().setChildObject("KEY_PINGBACK_ROW_" + numRows, pingback.toPersistence());
-        montoyaApi.persistence().extensionData().setInteger("KEY_NUM_PINGBACKS", ++numRows);
+        montoyaApi.persistence().extensionData().setChildObject(KEY_PINGBACK_ROW + numRows, pingback.toPersistence());
+        montoyaApi.persistence().extensionData().setInteger(KEY_PINGBACK_NUM_ROWS, ++numRows);
 
         montoyaApi.logging().logToOutput(" -> added to table.");
         montoyaApi.logging().logToOutput(" -> #entries: " + tableModel.getRowCount());
@@ -115,6 +113,7 @@ public class PingbackHandler {
                                                                                     pingback.getPayloadKey()));
         }
 
+        // Highlight in Proxy
         item.annotations().setHighlightColor(settings.getProxyHighlightColor());
 
         // Create audit issue
