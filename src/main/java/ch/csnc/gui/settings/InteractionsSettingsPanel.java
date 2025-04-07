@@ -19,19 +19,19 @@ public class InteractionsSettingsPanel extends AbstractSettingsPanel {
         ButtonGroup actionButtonGroup = new ButtonGroup();
         ActionListener l = e -> settingsModel.setActionForOwnIP(e.getActionCommand());
 
-        JRadioButton continueButton = new JRadioButton("Continue");
+        JRadioButton continueButton = new JRadioButton("Report");
         continueButton.setSelected(settingsModel.getActionForOwnIP() == SettingsModel.ActionForOwnIP.CONTINUE);
         continueButton.setActionCommand(String.valueOf(SettingsModel.ActionForOwnIP.CONTINUE));
         continueButton.addActionListener(l);
         actionButtonGroup.add(continueButton);
 
-        JRadioButton reduceButton = new JRadioButton("Continue, but reduce severity to LOW");
+        JRadioButton reduceButton = new JRadioButton("Report, but reduce severity to LOW");
         reduceButton.setSelected(settingsModel.getActionForOwnIP() == SettingsModel.ActionForOwnIP.REDUCED_RATING);
         reduceButton.setActionCommand(String.valueOf(SettingsModel.ActionForOwnIP.REDUCED_RATING));
         reduceButton.addActionListener(l);
         actionButtonGroup.add(reduceButton);
 
-        JRadioButton dropButton = new JRadioButton("Drop");
+        JRadioButton dropButton = new JRadioButton("Don't report");
         dropButton.setSelected(settingsModel.getActionForOwnIP() == SettingsModel.ActionForOwnIP.DROP);
         dropButton.setActionCommand(String.valueOf(SettingsModel.ActionForOwnIP.DROP));
         dropButton.addActionListener(l);
