@@ -31,6 +31,10 @@ public class PingbackTableModel extends AbstractTableModel {
         this.log = new ArrayList<>();
     }
 
+    public PingbackTableModel(List<Pingback> pingbacks) {
+        this.log = pingbacks;
+    }
+
     @Override
     public synchronized int getRowCount() {
         return log.size();
