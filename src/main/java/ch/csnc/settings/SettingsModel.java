@@ -50,6 +50,8 @@ public class SettingsModel {
     private final Preferences preferences;
     private final PersistedObject persistedObject;
 
+    private String buildTime;
+
     public SettingsModel(MontoyaApi montoyaApi) {
         this.montoyaApi = montoyaApi;
         preferences = montoyaApi.persistence().preferences();
@@ -188,6 +190,14 @@ public class SettingsModel {
 
     public CollaboratorClient getCollaboratorClient() {
         return collaboratorClient;
+    }
+
+    public void setBuildTime(String buildTime) {
+        this.buildTime = buildTime;
+    }
+
+    public String getBuildTime() {
+        return buildTime;
     }
 
     public enum ActionForOwnIP {

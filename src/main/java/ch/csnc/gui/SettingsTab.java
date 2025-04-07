@@ -37,6 +37,6 @@ public class SettingsTab extends JPanel {
 
         gbc.gridy++;
         gbc.weighty = 1; // Add weight to last element so that everything is shifted towards the anchor point
-        add(new AboutPanel(), gbc);
+        add(new AboutPanel(settingsModel), gbc);
     }
 }

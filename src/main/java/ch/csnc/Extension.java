@@ -32,19 +32,23 @@ public class Extension implements BurpExtension {
         logging = montoyaApi.logging();
         logging.logToOutput("Extension loaded. Happy hacking!");
 
+        // Load Settings
+        Preferences preferences = montoyaApi.persistence().preferences();
+        SettingsModel settingsModel = new SettingsModel(montoyaApi);
+
         // Show build date
         try {
             InputStream inputStream = getClass().getResourceAsStream("/build-time.properties");
             Properties props = new Properties();
             props.load(inputStream);
-            logging.logToOutput("Build time: " + props.getProperty("build.time"));
+            String buildTime = props.getProperty("build.time");
+            logging.logToOutput("Build time: " + buildTime);
+            settingsModel.setBuildTime(buildTime);
         } catch (Exception e) {
             logging.logToError("Error loading build time. Could not find the file build-time.properties.");
         }
 
-        // Load Settings
-        Preferences preferences = montoyaApi.persistence().preferences();
-        SettingsModel settingsModel = new SettingsModel(montoyaApi);
+
 
         List<Payload> payloadSettings;
         if (preferences.getInteger("KEY_NUM_ROWS") != null) {

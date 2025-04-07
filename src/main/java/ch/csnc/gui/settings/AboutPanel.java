@@ -1,18 +1,20 @@
 package ch.csnc.gui.settings;
 
+import ch.csnc.Extension;
 import ch.csnc.gui.GBC;
+import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
 
 public class AboutPanel extends AbstractSettingsPanel {
-    public AboutPanel() {
+    public AboutPanel(SettingsModel settingsModel) {
         super("About");
 
         add(new JLabel("Version:"),
             new GBC(0, 0)
                     .setWeights(0, 0)
                     .setMargin(0, 0, bottomMarginInGroup, 0));
-        add(new JLabel("0.1"),
+        add(new JLabel(Extension.version),
             new GBC(0, 1)
                     .setWeights(0, 1)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));
@@ -21,7 +23,7 @@ public class AboutPanel extends AbstractSettingsPanel {
             new GBC(1, 0)
                     .setWeights(0, 0)
                     .setMargin(0, 0, bottomMarginInGroup, 0));
-        add(new JLabel("2025-04-03 02:01:00"),
+        add(new JLabel(settingsModel.getBuildTime()),
             new GBC(1, 1)
                     .setWeights(0, 1)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));
