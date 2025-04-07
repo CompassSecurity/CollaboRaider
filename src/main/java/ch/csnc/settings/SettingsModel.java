@@ -190,29 +190,6 @@ public class SettingsModel {
         return collaboratorClient;
     }
 
-
-    /*
-    // Restore settings
-    public void getFromPreferenceStore(Preferences preferences) {
-        if (preferences.getInteger(PREFERENCES_KEY_POLLING_INTERVAL) != null) {
-            collaboratorPollingInterval = preferences.getInteger(PREFERENCES_KEY_POLLING_INTERVAL);
-        }
-
-
-
-        if (preferences.getString(PREFERENCES_KEY_ACTION_FOR_OWN_IP) != null) {
-            actionForOwnIP = ActionForOwnIP.valueOf(preferences.getString(PREFERENCES_KEY_ACTION_FOR_OWN_IP));
-        }
-    }
-
-    // Store settings
-    public void saveToPreferenceStore(Preferences preferences) {
-        preferences.setInteger(PREFERENCES_KEY_POLLING_INTERVAL, collaboratorPollingInterval);
-        preferences.setString(PREFERENCES_KEY_PROXY_HIGHLIGHT_COLOR, proxyHighlightColor.toString());
-        preferences.setString(PREFERENCES_KEY_ACTION_FOR_OWN_IP, actionForOwnIP.toString());
-    }
-    */
-
     public enum ActionForOwnIP {
         CONTINUE,
         REDUCED_RATING,
