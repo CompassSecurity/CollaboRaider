@@ -1,16 +1,5 @@
 # Description
-The extension [Collaborator Everywhere](https://github.com/portswigger/collaborator-everywhere) is quite popular in the BApp store.
-Initially created as a proof-of-concept for [Portswigger's blog post](https://portswigger.net/research/cracking-the-lens-targeting-https-hidden-attack-surface) on hidden server-side vulnerabilities, it helps discovering SSRF vulnerabilities by automatically injecting Collaborator URLs in various headers and creates issue if one of these URLs is resolved or fetched by the server.
-All in all, it is a great tool in any pentester's toolbox.
-
-However, despite its popularity, the extension is quite old and not maintained, with the last commit three years ago.
-There is no easy way to edit payloads (issue [#2](https://github.com/PortSwigger/collaborator-everywhere/issues/2) and [#21](https://github.com/PortSwigger/collaborator-everywhere/issues/21), except downloading the source, editing the resource file and building it.
-To my surprise, the extension is not only capable of modifying HTTP header fields, but also supports URL parameters and can use the host header from the original request as an additional placeholder.
-But without a convenient way to add, edit or enable payloads, this feature is 
-However, one open issue ([#5](https://github.com/PortSwigger/collaborator-everywhere/issues/5)) addresses further lack of configuration and suggests more placeholders.
-
-This motivated me to rewrite the extension using the new Montoya API and add a few new features that I missed during previous pentesting assessments.
-In particular, Portswigger's example project repository contains a great [demo project](https://github.com/PortSwigger/burp-extensions-montoya-api-examples/tree/main/collaborator) that explains how to work with a custom Collaborator client, which served as starting point for this extension.
+This extension is an improved version of the popular Burp Extension [Collaborator Everywhere](https://github.com/portswigger/collaborator-everywhere) which was developed by James '[albinowax](https://github.com/albinowax)' Kettle. It helps discovering SSRF vulnerabilities and other misconfigurations by automatically injecting Collaborator URLs in various headers or URL parameters. If one of these URLs is resolved or fetched by the server, a notification is raised and the received interaction can be analyzed.
 
 # Features
 All features from the original [Collaborator Everywhere](https://github.com/portswigger/collaborator-everywhere) extension are covered:
@@ -52,6 +41,11 @@ Payloads can be configured in the Payloads tab. They can be enabled or disabled 
 ## Settings tab
 This tab allows further configurations.
 ![Overview of the Settings tab](images/settings.png)
+
+# Credits
+The original Burp Extension [Collaborator Everywhere](https://github.com/portswigger/collaborator-everywhere) was initially created as a proof-of-concept for [Portswigger's blog post](https://portswigger.net/research/cracking-the-lens-targeting-https-hidden-attack-surface) on hidden server-side vulnerabilities. However, despite its popularity, the extension is quite old and no longer maintained, with the last commit being three years ago. This motivated me to rewrite the extension using the new Montoya API and add a few new features that I missed during previous pentesting assessments.
+
+Furthermore, Portswigger's example project repository contains a great [demo project](https://github.com/PortSwigger/burp-extensions-montoya-api-examples/tree/main/collaborator) that explains how to work with a custom Collaborator client, which served as starting point for this extension.
 
 # License
 See [LICENSE](LICENSE) file (MIT License).
