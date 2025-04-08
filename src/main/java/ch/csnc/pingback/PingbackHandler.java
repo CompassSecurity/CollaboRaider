@@ -1,4 +1,4 @@
-package ch.csnc.interaction;
+package ch.csnc.pingback;
 
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.collaborator.Interaction;
@@ -52,7 +52,7 @@ public class PingbackHandler {
                       .logToOutput("Own IP (%s): %s".formatted(interaction.type().name(),
                                                                interaction.clientIp().getHostAddress()));
             // settings.ownIPAddresses.add(interaction.clientIp().getHostAddress());
-            settings.ownIPAddresses.add(interaction.clientIp().getHostAddress());
+            settings.getOwnIPAddresses().add(interaction.clientIp().getHostAddress());
             return;
         }
 
@@ -84,7 +84,7 @@ public class PingbackHandler {
     private void processInteractionWithProxyItem(Interaction interaction, ProxyHttpRequestResponse item) {
 
         // Check if this pingback came from own IP
-        boolean fromOwnIP = settings.ownIPAddresses.contains(interaction.clientIp().getHostAddress());
+        boolean fromOwnIP = settings.getOwnIPAddresses().contains(interaction.clientIp().getHostAddress());
         // If setting is enabled, ignore this request
         if (fromOwnIP && settings.getActionForOwnIP() == SettingsModel.ActionForOwnIP.DROP) {
             return;

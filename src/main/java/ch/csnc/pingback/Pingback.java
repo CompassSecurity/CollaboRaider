@@ -1,4 +1,4 @@
-package ch.csnc.interaction;
+package ch.csnc.pingback;
 
 import burp.api.montoya.collaborator.*;
 import burp.api.montoya.core.ByteArray;
@@ -24,6 +24,23 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class Pingback {
+    private final static String PERSISTENCE_KEY_REQUEST = "PINGBACK_ORIGINAL_REQUEST";
+    private final static String PERSISTENCE_KEY_RESPONSE = "PINGBACK_ORIGINAL_RESPONSE";
+    private final static String PERSISTENCE_KEY_TIMESTAMP = "PINGBACK_REQUEST_TIMESTAMP";
+    private final static String PERSISTENCE_KEY_OWN_IP = "PINGBACK_OWN_IP";
+    private final static String PERSISTENCE_KEY_INTERACTION_ID = "PINGBACK_INTERACTION_ID";
+    private final static String PERSISTENCE_KEY_INTERACTION_TYPE = "PINGBACK_INTERACTION_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_TIMESTAMP = "PINGBACK_INTERACTION_TIMESTAMP";
+    private final static String PERSISTENCE_KEY_INTERACTION_IP = "PINGBACK_INTERACTION_IP";
+    private final static String PERSISTENCE_KEY_INTERACTION_PORT = "PINGBACK_INTERACTION_PORT";
+    private final static String PERSISTENCE_KEY_INTERACTION_DNS_TYPE = "PINGBACK_INTERACTION_DNS_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_DNS_RAW = "PINGBACK_INTERACTION_DNS_RAW";
+    private final static String PERSISTENCE_KEY_INTERACTION_HTTP_PROTOCOL = "PINGBACK_INTERACTION_HTTP_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_HTTP_REQRSP = "PINGBACK_INTERACTION_HTTP_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_SMTP_PROTOCOL = "PINGBACK_INTERACTION_SMTP_TYPE";
+    private final static String PERSISTENCE_KEY_INTERACTION_SMTP_CONVERSATION = "PINGBACK_INTERACTION_SMTP_CONVERSATION";
+    private final static String PERSISTENCE_KEY_INTERACTION_CUSTOM_DATA = "PINGBACK_INTERACTION_CUSTOM_DATA";
+
     public HttpRequest request;
     public HttpResponse response;
     public Interaction interaction;
@@ -32,8 +49,11 @@ public class Pingback {
     ZonedDateTime requestTime;
     PayloadType payloadType;
 
-
-    public Pingback(HttpRequest request, HttpResponse response, ZonedDateTime requestTime, Interaction interaction, boolean fromOwnIP) {
+    public Pingback(HttpRequest request,
+                    HttpResponse response,
+                    ZonedDateTime requestTime,
+                    Interaction interaction,
+                    boolean fromOwnIP) {
         this.request = request;
         this.response = response;
         this.requestTime = requestTime;
@@ -65,170 +85,33 @@ public class Pingback {
         }
     }
 
-    public String getLocalTimestamp() {
-        // really? is there a better way to do this?
-        return interaction.timeStamp()
-                          .withZoneSameInstant(ZoneId.systemDefault())
-                          .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
-    }
-
-    public String getPingbackType() {
-        return interaction.type().toString();
-    }
-
-    public String getInteractionId() {
-        return interaction.id().toString();
-    }
-
-    public String getInteractionClientIp() {
-        return interaction.clientIp().getHostAddress();
-    }
-
-    public String getPayloadType() {
-        return payloadType.label;
-    }
-
-    public String getPayloadKey() {
-        return payloadKey;
-    }
-
-    public String getDescription() {
-        String data = "The collaborator server received a %s pingback from IP address <b>%s</b> at %s.<br>".formatted(
-                getPingbackType(),
-                getInteractionClientIp(),
-                getLocalTimestamp());
-
-        // Perform reverse DNS lookup of the IP address
-        String canonicalHostName = interaction.clientIp().getCanonicalHostName();
-        if (!Objects.equals(canonicalHostName, getInteractionClientIp()))
-            data += "Canonical host name: <b>%s</b><br>"
-                    .formatted(canonicalHostName);
-
-        // Show hint if the request originated from the same IP address that was determined at startup
-        if (fromOwnIP) {
-            data += "<b style=\"color:blue;\">Info: This interaction was received from your own IP address.</b><br>";
-        }
-
-        data += "This pingback was caused by a payload in the %s <b>%s</b>.<br>".formatted(getPayloadType(),
-                                                                                           getPayloadKey());
-        // Calculate duration
-        Duration duration = Duration.between(requestTime, interaction.timeStamp());
-        String durationString = duration.toString()
-                                        // from docs: "The format of the returned string will be PTnHnMnS,
-                                        // where n is the relevant hours, minutes or seconds part of the duration"
-                                        // => remove trailing "PT"
-                                        .substring(2)
-                                        // Add spaces to every nH, nM, nS except the last part
-                                        .replaceAll("(\\d[HMS])(?!$)", "$1 ")
-                                        // don't shout so loud
-                                        .toLowerCase();
-        data += "It was received <b>%s</b> after the request with the payload was sent.<br><br>"
-                .formatted(durationString);
-
-        // Show details for DNS pingback
-        if (interaction.type() == InteractionType.DNS && interaction.dnsDetails().isPresent()) {
-            data += "<b>DNS Details:</b><br>";
-            data += "Query type: <b>%s</b><br>"
-                    .formatted(interaction.dnsDetails().get().queryType().name());
-            // TODO: Parse raw DNS query to get more info
-            String rawRequest = Utils.sanitize(interaction.dnsDetails().get().query().toString());
-            data += "Raw query: <br><pre>%s</pre><br>".formatted(rawRequest);
-        }
-
-        // HTTP details
-        if (interaction.type() == InteractionType.HTTP && interaction.httpDetails().isPresent()) {
-            data += "<b>HTTP Details:</b><br>";
-            data += "Protocol: %s<br>"
-                    .formatted(interaction.httpDetails().get().protocol().name());
-            String rawRequest = Utils.sanitize(interaction.httpDetails().get().requestResponse().request().toString());
-            data += "Request: <pre>%s</pre><br>"
-                    .formatted(rawRequest);
-        }
-
-        // SMTP details
-        if (interaction.type() == InteractionType.SMTP && interaction.smtpDetails().isPresent()) {
-            data += "<b>SMTP Details:</b><br>";
-            data += "Protocol: %s<br>"
-                    .formatted(interaction.smtpDetails().get().protocol().name());
-            // TODO: Parse SMTP conversation to get more info
-            String rawRequest = Utils.sanitize(interaction.smtpDetails().get().conversation());
-            data += "SMTP Conversation:<br><pre>%s</pre><br>"
-                    .formatted(rawRequest);
-        }
-
-        // Show custom data (if it exists)
-        if (interaction.customData().isPresent()) {
-            data += "<b>Custom Data:</b><br>";
-            data += "%s<br>"
-                    .formatted(interaction.customData().get());
-        }
-
-        return data;
-    }
-
-    private final static String PERSISTENCE_KEY_REQUEST = "PINGBACK_ORIGINAL_REQUEST";
-    private final static String PERSISTENCE_KEY_RESPONSE = "PINGBACK_ORIGINAL_RESPONSE";
-    private final static String PERSISTENCE_KEY_TIMESTAMP = "PINGBACK_REQUEST_TIMESTAMP";
-    private final static String PERSISTENCE_KEY_OWN_IP = "PINGBACK_OWN_IP";
-    private final static String PERSISTENCE_KEY_INTERACTION_ID = "PINGBACK_INTERACTION_ID";
-    private final static String PERSISTENCE_KEY_INTERACTION_TYPE = "PINGBACK_INTERACTION_TYPE";
-    private final static String PERSISTENCE_KEY_INTERACTION_TIMESTAMP = "PINGBACK_INTERACTION_TIMESTAMP";
-    private final static String PERSISTENCE_KEY_INTERACTION_IP = "PINGBACK_INTERACTION_IP";
-    private final static String PERSISTENCE_KEY_INTERACTION_PORT = "PINGBACK_INTERACTION_PORT";
-    private final static String PERSISTENCE_KEY_INTERACTION_DNS_TYPE = "PINGBACK_INTERACTION_DNS_TYPE";
-    private final static String PERSISTENCE_KEY_INTERACTION_DNS_RAW = "PINGBACK_INTERACTION_DNS_RAW";
-    private final static String PERSISTENCE_KEY_INTERACTION_HTTP_PROTOCOL = "PINGBACK_INTERACTION_HTTP_TYPE";
-    private final static String PERSISTENCE_KEY_INTERACTION_HTTP_REQRSP = "PINGBACK_INTERACTION_HTTP_TYPE";
-    private final static String PERSISTENCE_KEY_INTERACTION_SMTP_PROTOCOL = "PINGBACK_INTERACTION_SMTP_TYPE";
-    private final static String PERSISTENCE_KEY_INTERACTION_SMTP_CONVERSATION = "PINGBACK_INTERACTION_SMTP_CONVERSATION";
-    private final static String PERSISTENCE_KEY_INTERACTION_CUSTOM_DATA = "PINGBACK_INTERACTION_CUSTOM_DATA";
-
-    public PersistedObject toPersistence() {
-        PersistedObject persistedObject = PersistedObject.persistedObject();
-        persistedObject.setHttpRequest(PERSISTENCE_KEY_REQUEST, request);
-        persistedObject.setHttpResponse(PERSISTENCE_KEY_RESPONSE, response);
-        persistedObject.setString(PERSISTENCE_KEY_TIMESTAMP, requestTime.toString());
-        persistedObject.setBoolean(PERSISTENCE_KEY_OWN_IP, fromOwnIP);
-        // Store interaction
-        persistedObject.setString(PERSISTENCE_KEY_INTERACTION_ID, interaction.id().toString());
-        persistedObject.setString(PERSISTENCE_KEY_INTERACTION_TYPE, interaction.type().name());
-        persistedObject.setString(PERSISTENCE_KEY_INTERACTION_TIMESTAMP, interaction.timeStamp().toString());
-        persistedObject.setByteArray(PERSISTENCE_KEY_INTERACTION_IP,
-                                     ByteArray.byteArray(interaction.clientIp().getAddress()));
-        persistedObject.setInteger(PERSISTENCE_KEY_INTERACTION_PORT, interaction.clientPort());
-        // DNS
-        if (interaction.type() == InteractionType.DNS && interaction.dnsDetails().isPresent()) {
-            DnsDetails details = interaction.dnsDetails().get();
-            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_DNS_TYPE, details.queryType().name());
-            persistedObject.setByteArray(PERSISTENCE_KEY_INTERACTION_DNS_RAW, details.query());
-        }
-        // HTTP
-        else if(interaction.type() == InteractionType.HTTP && interaction.httpDetails().isPresent()) {
-            HttpDetails details = interaction.httpDetails().get();
-            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_HTTP_PROTOCOL, details.protocol().name());
-            persistedObject.setHttpRequestResponse(PERSISTENCE_KEY_INTERACTION_HTTP_REQRSP, details.requestResponse());
-        }
-        // SMTP
-        else if(interaction.type() == InteractionType.SMTP && interaction.smtpDetails().isPresent()) {
-            SmtpDetails details = interaction.smtpDetails().get();
-            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_SMTP_PROTOCOL, details.protocol().name());
-            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_SMTP_CONVERSATION, details.conversation());
-        }
-        // Custom data
-        if (interaction.customData().isPresent()) {
-            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_CUSTOM_DATA, interaction.customData().get());
-        }
-
-        return persistedObject;
-    }
-
+    /**
+     * Reassemble the Pingback object back from a PersistedObject by using the defined keys.
+     *
+     * @param persistedObject Object stored in Burp's project persistence
+     * @return Pingback object
+     */
     public static Pingback fromPersistence(PersistedObject persistedObject) {
         HttpRequest request = persistedObject.getHttpRequest(PERSISTENCE_KEY_REQUEST);
         HttpResponse response = persistedObject.getHttpResponse(PERSISTENCE_KEY_RESPONSE);
         ZonedDateTime timestamp = ZonedDateTime.parse(persistedObject.getString(PERSISTENCE_KEY_TIMESTAMP));
         Boolean fromOwnIp = persistedObject.getBoolean(PERSISTENCE_KEY_OWN_IP);
 
-        Interaction interaction = new Interaction() {
+        Interaction interaction = getInteraction(persistedObject);
+
+        return new Pingback(request, response, timestamp, interaction, fromOwnIp);
+    }
+
+    /**
+     * Reassemble the recorded interaction back from a PersistedObject
+     *
+     * @param persistedObject Object stored in Burp's project persistence
+     * @return Interaction as recorded by Burp Collaborator
+     */
+    private static Interaction getInteraction(PersistedObject persistedObject) {
+        // Since the Interaction class is abstract and does not provide any public constructors,
+        // we'll just implement all methods with the appropriate values
+        return new Interaction() {
             @Override
             public InteractionId id() {
                 return new InteractionId() {
@@ -252,7 +135,8 @@ public class Pingback {
             @Override
             public InetAddress clientIp() {
                 try {
-                    return InetAddress.getByAddress(persistedObject.getByteArray(PERSISTENCE_KEY_INTERACTION_IP).getBytes());
+                    return InetAddress.getByAddress(persistedObject.getByteArray(PERSISTENCE_KEY_INTERACTION_IP)
+                                                                   .getBytes());
                 } catch (UnknownHostException e) {
                     throw new RuntimeException(e);
                 }
@@ -331,7 +215,162 @@ public class Pingback {
                 }
             }
         };
+    }
 
-        return new Pingback(request, response, timestamp, interaction, fromOwnIp);
+    public String getLocalTimestamp() {
+        // really? is there a better way to do this?
+        return interaction.timeStamp()
+                          .withZoneSameInstant(ZoneId.systemDefault())
+                          .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+    }
+
+    public String getPingbackType() {
+        return interaction.type().toString();
+    }
+
+    public String getInteractionId() {
+        return interaction.id().toString();
+    }
+
+    public String getInteractionClientIp() {
+        return interaction.clientIp().getHostAddress();
+    }
+
+    public String getPayloadType() {
+        return payloadType.label;
+    }
+
+    public String getPayloadKey() {
+        return payloadKey;
+    }
+
+    /**
+     * Provide a detailed description of the pingback both for the Description tab in the UI
+     * and for the issue details.
+     *
+     * @return Description with HTML formatting
+     */
+    public String getDescription() {
+        String data = "The collaborator server received a %s pingback from IP address <b>%s</b> at %s.<br>".formatted(
+                getPingbackType(),
+                getInteractionClientIp(),
+                getLocalTimestamp());
+
+        // Perform reverse DNS lookup of the IP address
+        String canonicalHostName = interaction.clientIp().getCanonicalHostName();
+        if (!Objects.equals(canonicalHostName, getInteractionClientIp()))
+            data += "Canonical host name: <b>%s</b><br>"
+                    .formatted(canonicalHostName);
+
+        // Show hint if the request originated from the same IP address that was determined at startup
+        if (fromOwnIP) {
+            data += "<b style=\"color:blue;\">Info: This interaction was received from your own IP address.</b><br>";
+        }
+
+        data += "This pingback was caused by a payload in the %s <b>%s</b>.<br>".formatted(getPayloadType(),
+                                                                                           getPayloadKey());
+        // Calculate duration
+        Duration duration = Duration.between(requestTime, interaction.timeStamp());
+        String durationString = duration.toString()
+                                        // from docs: "The format of the returned string will be PTnHnMnS,
+                                        // where n is the relevant hours, minutes or seconds part of the duration"
+                                        // => remove trailing "PT"
+                                        .substring(2)
+                                        // Add spaces to every nH, nM, nS except the last part
+                                        .replaceAll("(\\d[HMS])(?!$)", "$1 ")
+                                        // don't shout so loud
+                                        .toLowerCase();
+        data += "It was received <b>%s</b> after the request with the payload was sent.<br><br>"
+                .formatted(durationString);
+
+        // Show details for DNS pingback
+        if (interaction.type() == InteractionType.DNS && interaction.dnsDetails().isPresent()) {
+            data += "<b>DNS Details:</b><br>";
+            data += "Query type: <b>%s</b><br>"
+                    .formatted(interaction.dnsDetails().get().queryType().name());
+            // TODO: Parse raw DNS query to get more info
+            String rawRequest = Utils.sanitize(interaction.dnsDetails().get().query().toString());
+            data += "Raw query: <br><pre>%s</pre><br>".formatted(rawRequest);
+        }
+
+        // HTTP details
+        if (interaction.type() == InteractionType.HTTP && interaction.httpDetails().isPresent()) {
+            data += "<b>HTTP Details:</b><br>";
+            data += "Protocol: %s<br>"
+                    .formatted(interaction.httpDetails().get().protocol().name());
+            String rawRequest = Utils.sanitize(interaction.httpDetails().get().requestResponse().request().toString());
+            data += "Request: <pre>%s</pre><br>"
+                    .formatted(rawRequest);
+        }
+
+        // SMTP details
+        if (interaction.type() == InteractionType.SMTP && interaction.smtpDetails().isPresent()) {
+            data += "<b>SMTP Details:</b><br>";
+            data += "Protocol: %s<br>"
+                    .formatted(interaction.smtpDetails().get().protocol().name());
+            // TODO: Parse SMTP conversation to get more info
+            String rawRequest = Utils.sanitize(interaction.smtpDetails().get().conversation());
+            data += "SMTP Conversation:<br><pre>%s</pre><br>"
+                    .formatted(rawRequest);
+        }
+
+        // Show custom data (if it exists)
+        if (interaction.customData().isPresent()) {
+            data += "<b>Custom Data:</b><br>";
+            data += "%s<br>"
+                    .formatted(interaction.customData().get());
+        }
+
+        return data;
+    }
+
+    /**
+     * Put all data into a PersistedObject so that it can be stored in the current project.
+     * This preserves all recorded data if the extension is closed and re-opened.
+     *
+     * @return A PersistedObject that contains all data accessible by static keys.
+     */
+    public PersistedObject toPersistence() {
+        PersistedObject persistedObject = PersistedObject.persistedObject();
+        persistedObject.setHttpRequest(PERSISTENCE_KEY_REQUEST, request);
+        persistedObject.setHttpResponse(PERSISTENCE_KEY_RESPONSE, response);
+        persistedObject.setString(PERSISTENCE_KEY_TIMESTAMP, requestTime.toString());
+        persistedObject.setBoolean(PERSISTENCE_KEY_OWN_IP, fromOwnIP);
+
+        // Store interaction
+        persistedObject.setString(PERSISTENCE_KEY_INTERACTION_ID, interaction.id().toString());
+        persistedObject.setString(PERSISTENCE_KEY_INTERACTION_TYPE, interaction.type().name());
+        persistedObject.setString(PERSISTENCE_KEY_INTERACTION_TIMESTAMP, interaction.timeStamp().toString());
+        persistedObject.setByteArray(PERSISTENCE_KEY_INTERACTION_IP,
+                                     ByteArray.byteArray(interaction.clientIp().getAddress()));
+        persistedObject.setInteger(PERSISTENCE_KEY_INTERACTION_PORT, interaction.clientPort());
+
+        // DNS
+        if (interaction.type() == InteractionType.DNS && interaction.dnsDetails().isPresent()) {
+            DnsDetails details = interaction.dnsDetails().get();
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_DNS_TYPE, details.queryType().name());
+            persistedObject.setByteArray(PERSISTENCE_KEY_INTERACTION_DNS_RAW, details.query());
+        }
+
+        // HTTP
+        else if (interaction.type() == InteractionType.HTTP && interaction.httpDetails().isPresent()) {
+            HttpDetails details = interaction.httpDetails().get();
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_HTTP_PROTOCOL, details.protocol().name());
+            persistedObject.setHttpRequestResponse(PERSISTENCE_KEY_INTERACTION_HTTP_REQRSP, details.requestResponse());
+        }
+
+        // SMTP
+        else if (interaction.type() == InteractionType.SMTP && interaction.smtpDetails().isPresent()) {
+            SmtpDetails details = interaction.smtpDetails().get();
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_SMTP_PROTOCOL, details.protocol().name());
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_SMTP_CONVERSATION, details.conversation());
+        }
+
+        // Custom data
+        if (interaction.customData().isPresent()) {
+            persistedObject.setString(PERSISTENCE_KEY_INTERACTION_CUSTOM_DATA, interaction.customData().get());
+        }
+
+        return persistedObject;
     }
 }

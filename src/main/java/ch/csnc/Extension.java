@@ -4,7 +4,7 @@ import burp.api.montoya.BurpExtension;
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.logging.Logging;
 import ch.csnc.gui.MainTab;
-import ch.csnc.interaction.PingbackHandler;
+import ch.csnc.pingback.PingbackHandler;
 import ch.csnc.payload.PayloadsTableModel;
 import ch.csnc.settings.SettingsModel;
 

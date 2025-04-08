@@ -6,8 +6,8 @@ import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.ui.UserInterface;
 import burp.api.montoya.ui.editor.*;
 import ch.csnc.gui.interactions.DescriptionViewer;
-import ch.csnc.interaction.PingbackTableModel;
-import ch.csnc.interaction.Pingback;
+import ch.csnc.pingback.PingbackTableModel;
+import ch.csnc.pingback.Pingback;
 import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;

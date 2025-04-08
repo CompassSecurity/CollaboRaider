@@ -1,7 +1,7 @@
 package ch.csnc.gui;
 
 import burp.api.montoya.MontoyaApi;
-import ch.csnc.interaction.PingbackTableModel;
+import ch.csnc.pingback.PingbackTableModel;
 import ch.csnc.payload.PayloadsTableModel;
 import ch.csnc.settings.SettingsModel;
 

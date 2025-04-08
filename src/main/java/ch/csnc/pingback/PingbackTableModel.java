@@ -6,14 +6,11 @@
  * license terms for those products.
  */
 
-package ch.csnc.interaction;
+package ch.csnc.pingback;
 
 import javax.swing.table.AbstractTableModel;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class PingbackTableModel extends AbstractTableModel {
     private final List<Pingback> log;

@@ -1,4 +1,4 @@
-package ch.csnc.interaction;
+package ch.csnc.pingback;
 
 import burp.api.montoya.collaborator.Interaction;
 import burp.api.montoya.core.Marker;
@@ -10,9 +10,7 @@ import burp.api.montoya.scanner.audit.issues.AuditIssueDefinition;
 import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
 import ch.csnc.Extension;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
 
 public class PingbackAuditIssue implements AuditIssue {
     Pingback pingback;

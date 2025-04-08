@@ -3,7 +3,7 @@ package ch.csnc;
 import burp.api.montoya.collaborator.CollaboratorClient;
 import burp.api.montoya.collaborator.Interaction;
 import burp.api.montoya.logging.Logging;
-import ch.csnc.interaction.PingbackHandler;
+import ch.csnc.pingback.PingbackHandler;
 
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
