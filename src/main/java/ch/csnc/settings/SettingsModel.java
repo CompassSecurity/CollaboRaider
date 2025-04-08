@@ -13,43 +13,29 @@ import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
 import java.util.List;
 
 public class SettingsModel {
-    // Store own IP addresses discovered at startup
-    // private List<String> ownIPAddresses;
-    public OwnIPAddresses ownIPAddresses = new OwnIPAddresses();
-    //private List<String> ownIPAddressesDNS, ownIPAddressesHTTP;
-
     // Collaborator Client Polling Interval
     private final String PREFERENCES_KEY_POLLING_INTERVAL = "pollingInterval";
-    private int collaboratorPollingInterval = 5;
-
     // Burp Proxy highlight color
     private final String PREFERENCES_KEY_PROXY_HIGHLIGHT_COLOR = "proxyHighlightColor";
-    private final HighlightColor proxyHighlightColor = HighlightColor.RED;
-
     // Burp Proxy annotate request with comment
     private final String PREFERENCES_KEY_ENABLE_COMMENTS = "enableComments";
-    private final Boolean commentsEnabled = true;
-
     // Action if pingback came from own IP
-    private ActionForOwnIP actionForOwnIP = ActionForOwnIP.CONTINUE;
     private final String PREFERENCES_KEY_ACTION_FOR_OWN_IP = "actionForOwnIP";
-
     // Severity rating for DNS pingback
     private final String PREFERENCES_KEY_SEVERITY_DNS = "pingbackSeverityDNS";
-    private final AuditIssueSeverity pingbackSeverityDNS = AuditIssueSeverity.MEDIUM;
     private final String PREFERENCES_KEY_SEVERITY_HTTP = "pingbackSeverityHTTP";
-    private final AuditIssueSeverity pingbackSeverityHTTP = AuditIssueSeverity.MEDIUM;
     private final String PREFERENCES_KEY_SEVERITY_SMTP = "pingbackSeveritySMTP";
-    private final AuditIssueSeverity pingbackSeveritySMTP = AuditIssueSeverity.HIGH;
-
+    // Save Collaborator secret key with project
     private final String KEY_COLLABORATOR_SECRET = "persistent_collaborator_secret_key";
-    private CollaboratorClient collaboratorClient;
-    private CollaboratorPayload checkIpPayload;
-
     private final MontoyaApi montoyaApi;
     private final Preferences preferences;
     private final PersistedObject persistedObject;
-
+    // Store own IP addresses discovered at startup
+    private final OwnIPAddresses ownIPAddresses = new OwnIPAddresses();
+    // Collaborator client is initialized either with a new secret key or with a key retrieved from project storage
+    private final CollaboratorClient collaboratorClient;
+    // Collaborator payload that is sent to determine the system's own external IP
+    private CollaboratorPayload checkIpPayload;
     private String buildTime;
 
     public SettingsModel(MontoyaApi montoyaApi) {
@@ -63,11 +49,13 @@ public class SettingsModel {
             collaboratorClient = montoyaApi.collaborator().createClient();
             String secretKey = collaboratorClient.getSecretKey().toString();
             persistedObject.setString(KEY_COLLABORATOR_SECRET, secretKey);
-            montoyaApi.logging().logToOutput("Created new CollaboratorClient with secret key " + collaboratorClient.getSecretKey());
+            montoyaApi.logging()
+                      .logToOutput("Created new CollaboratorClient with secret key " + collaboratorClient.getSecretKey());
         } else {
             String secretKey = persistedObject.getString(KEY_COLLABORATOR_SECRET);
             collaboratorClient = montoyaApi.collaborator().restoreClient(SecretKey.secretKey(secretKey));
-            montoyaApi.logging().logToOutput("Restored CollaboratorClient with existing secret key " + collaboratorClient.getSecretKey());
+            montoyaApi.logging()
+                      .logToOutput("Restored CollaboratorClient with existing secret key " + collaboratorClient.getSecretKey());
         }
         montoyaApi.logging().logToOutput("Collaborator server: " + collaboratorClient.server().address());
     }
@@ -81,7 +69,7 @@ public class SettingsModel {
             return preferences.getBoolean(PREFERENCES_KEY_ENABLE_COMMENTS);
         } else {
             // Default value
-            return commentsEnabled;
+            return true;
         }
     }
 
@@ -94,7 +82,7 @@ public class SettingsModel {
             return HighlightColor.valueOf(preferences.getString(PREFERENCES_KEY_PROXY_HIGHLIGHT_COLOR));
         } else {
             // Default value
-            return proxyHighlightColor;
+            return HighlightColor.RED;
         }
     }
 
@@ -107,7 +95,7 @@ public class SettingsModel {
             return preferences.getInteger(PREFERENCES_KEY_POLLING_INTERVAL);
         } else {
             // Default value
-            return collaboratorPollingInterval;
+            return 5;
         }
     }
 
@@ -120,7 +108,7 @@ public class SettingsModel {
             return ActionForOwnIP.valueOf(preferences.getString(PREFERENCES_KEY_ACTION_FOR_OWN_IP));
         } else {
             // Default value
-            return actionForOwnIP;
+            return ActionForOwnIP.CONTINUE;
         }
     }
 
@@ -133,7 +121,7 @@ public class SettingsModel {
             return AuditIssueSeverity.valueOf(preferences.getString(PREFERENCES_KEY_SEVERITY_DNS));
         } else {
             // Default value
-            return pingbackSeverityDNS;
+            return AuditIssueSeverity.MEDIUM;
         }
     }
 
@@ -146,7 +134,7 @@ public class SettingsModel {
             return AuditIssueSeverity.valueOf(preferences.getString(PREFERENCES_KEY_SEVERITY_HTTP));
         } else {
             // Default value
-            return pingbackSeverityHTTP;
+            return AuditIssueSeverity.MEDIUM;
         }
     }
 
@@ -159,7 +147,7 @@ public class SettingsModel {
             return AuditIssueSeverity.valueOf(preferences.getString(PREFERENCES_KEY_SEVERITY_SMTP));
         } else {
             // Default value
-            return pingbackSeveritySMTP;
+            return AuditIssueSeverity.HIGH;
         }
     }
 
@@ -167,12 +155,12 @@ public class SettingsModel {
         preferences.setString(PREFERENCES_KEY_SEVERITY_SMTP, severity.toString());
     }
 
-    public void setCheckIpPayload(CollaboratorPayload checkIpPayload) {
-        this.checkIpPayload = checkIpPayload;
-    }
-
     public CollaboratorPayload getCheckIpPayload() {
         return checkIpPayload;
+    }
+
+    public void setCheckIpPayload(CollaboratorPayload checkIpPayload) {
+        this.checkIpPayload = checkIpPayload;
     }
 
     public void sendCheckIpPayload() {
@@ -192,12 +180,12 @@ public class SettingsModel {
         return collaboratorClient;
     }
 
-    public void setBuildTime(String buildTime) {
-        this.buildTime = buildTime;
-    }
-
     public String getBuildTime() {
         return buildTime;
+    }
+
+    public void setBuildTime(String buildTime) {
+        this.buildTime = buildTime;
     }
 
     public enum ActionForOwnIP {
