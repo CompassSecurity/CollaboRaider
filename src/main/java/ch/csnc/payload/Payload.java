@@ -1,23 +1,34 @@
 package ch.csnc.payload;
 
-import burp.api.montoya.persistence.PersistedObject;
-
-import java.io.Serializable;
 import java.util.Objects;
 
-public class Payload implements Serializable {
+public class Payload {
+    private static final String separator = "#";
     public Boolean isActive;
     public PayloadType type;
     public String key;
     public String value;
-
-    private static final String separator = "#";
 
     public Payload(Boolean isActive, PayloadType type, String key, String value) {
         this.isActive = isActive;
         this.type = type;
         this.key = key;
         this.value = value;
+    }
+
+    /**
+     * Create a payload object from a String
+     *
+     * @param serialized String representation of the payload as returned by toString
+     * @return Deserialized Payload object
+     */
+    public static Payload fromString(String serialized) {
+        String[] components = serialized.split(separator);
+        assert components.length == 4;
+
+        boolean isActive = Objects.equals(components[0], "1");
+        PayloadType payloadType = PayloadType.valueOf(components[1]);
+        return new Payload(isActive, payloadType, components[2], components[3]);
     }
 
     public Boolean isActive() {
@@ -54,7 +65,8 @@ public class Payload implements Serializable {
 
     /**
      * Provide a way to serialize into a String so that it can be stored to persistent preferences
-     * @return
+     *
+     * @return String representation of the Payload object
      */
     public String toString() {
         String out = "";
@@ -69,14 +81,5 @@ public class Payload implements Serializable {
         assert out.split(separator).length == 4;
 
         return out;
-    }
-
-    public static Payload fromString(String serialized) {
-        String[] components = serialized.split(separator);
-        assert components.length == 4;
-
-        boolean isActive = Objects.equals(components[0], "1");
-        PayloadType payloadType = PayloadType.valueOf(components[1]);
-        return new Payload(isActive, payloadType, components[2], components[3]);
     }
 }
