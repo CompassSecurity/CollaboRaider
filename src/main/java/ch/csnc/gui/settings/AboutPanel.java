@@ -14,7 +14,7 @@ public class AboutPanel extends AbstractSettingsPanel {
             new GBC(0, 0)
                     .setWeights(0, 0)
                     .setMargin(0, 0, bottomMarginInGroup, 0));
-        add(new JLabel(Extension.version),
+        add(new JLabel(settingsModel.getVersion()),
             new GBC(0, 1)
                     .setWeights(0, 1)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));

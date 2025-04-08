@@ -36,7 +36,7 @@ public class SettingsModel {
     private final CollaboratorClient collaboratorClient;
     // Collaborator payload that is sent to determine the system's own external IP
     private CollaboratorPayload checkIpPayload;
-    private String buildTime;
+    private String buildTime, version;
 
     public SettingsModel(MontoyaApi montoyaApi) {
         this.montoyaApi = montoyaApi;
@@ -186,6 +186,14 @@ public class SettingsModel {
 
     public void setBuildTime(String buildTime) {
         this.buildTime = buildTime;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     public enum ActionForOwnIP {

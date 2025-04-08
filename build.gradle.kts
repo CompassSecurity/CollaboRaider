@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "ch.csnc"
-version = "1.0-SNAPSHOT"
+version = "0.1"
 
 repositories {
     mavenCentral()
@@ -21,7 +21,11 @@ dependencies {
 tasks.register<Task>("captureBuildTime") {
     doLast {
         val buildTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd,HH:mm:ss"))
-        file("build-time.properties").writeText("build.time=$buildTime")
+        file("build-time.properties").writeText(
+            "" +
+                    "build.version=$version\n" +
+                    "build.time=$buildTime"
+        )
     }
 }
 

@@ -13,7 +13,6 @@ import java.util.Properties;
 
 public class Extension implements BurpExtension {
     public static final String name = "CollaboRaider";
-    public static final String version = "0.1";
 
     private MontoyaApi montoyaApi;
     private Logging logging;
@@ -37,7 +36,11 @@ public class Extension implements BurpExtension {
             Properties props = new Properties();
             props.load(inputStream);
             String buildTime = props.getProperty("build.time");
+            String version = props.getProperty("build.version");
+            logging.logToOutput("Version: " + version);
             logging.logToOutput("Build time: " + buildTime);
+
+            settingsModel.setVersion(version);
             settingsModel.setBuildTime(buildTime);
         } catch (Exception e) {
             logging.logToError("Error loading build time. Could not find the file build-time.properties.");
