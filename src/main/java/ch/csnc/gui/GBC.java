@@ -14,8 +14,8 @@ public class GBC extends GridBagConstraints {
      * Construct a GridBagConstraints object and set x and y positions.
      * This is done by specifying the grid cell that the top-left corner of the component will be displayed in.
      *
-     * @param row row index (y position)
-     * @param row column index (x position)
+     * @param row    row index (y position)
+     * @param column column index (x position)
      */
     public GBC(int row, int column) {
         this.gridx = column;
