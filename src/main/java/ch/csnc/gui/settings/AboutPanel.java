@@ -33,7 +33,7 @@ public class AboutPanel extends AbstractSettingsPanel {
         developerLabel.setOpaque(false);
         developerLabel.setText("""
                                <html>
-                               Developed by Compass Security (<a href="http://compass-security.com">http://compass-security.com</a>), <br>
+                               Developed by Andreas Brombach @ Compass Security (<a href="http://compass-security.com">http://compass-security.com</a>), <br>
                                based on the extension <i>Collaborator Everywhere</i> (<a href="https://github.com/PortSwigger/collaborator-everywhere">https://github.com/PortSwigger/collaborator-everywhere</a>) by James 'albinowax' Kettle.
                                </html>
                                """);
