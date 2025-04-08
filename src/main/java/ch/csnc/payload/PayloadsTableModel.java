@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 public class PayloadsTableModel extends AbstractTableModel {
     private final List<Payload> payloads;
+
     private final String[] columnNames = {
             "Active?",
             "Payload type",
@@ -23,6 +24,12 @@ public class PayloadsTableModel extends AbstractTableModel {
     private final String KEY_ROW = "PREFERENCES_KEY_PAYLOADS_ROW_";
     private final Preferences preferences;
 
+    /**
+     * Initialize the TableModel by either loading the specified payloads from settings
+     * or from the file /injections if no preferences have been saved yet.
+     *
+     * @param preferences
+     */
     public PayloadsTableModel(Preferences preferences) {
         this.preferences = preferences;
         if (preferences.getInteger(KEY_NUM_ROWS) != null) {
