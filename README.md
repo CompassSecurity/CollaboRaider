@@ -37,7 +37,21 @@ In Burp Suite, open the `Extensions` tab and navigate to the `Installed` sub-tab
 hopefully coming soon...
 
 # Usage
-todo
+## Issues
+If a pingback is received, an issue is raised:
+![Issue overview](images/issues.png)
+
+## Interactions tab
+The Interactions tab shows all received pingbacks. When a row is selected, more details are shown below.
+![Overview of the Interactions tab](images/interactions.png)
+
+## Payloads tab
+Payloads can be configured in the Payloads tab. They can be enabled or disabled though the checkbox, or edited by double-clicking a cell. Further, new payloads can be added or existing payloads be removed.
+![Overview of the Payloads tab](images/payloads.png)
+
+## Settings tab
+This tab allows further configurations.
+![Overview of the Settings tab](images/settings.png)
 
 # License
 See [LICENSE](LICENSE) file (MIT License).
