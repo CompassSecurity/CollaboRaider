@@ -1,9 +1,8 @@
 package ch.csnc.payload;
 
-import java.util.Objects;
 
 public class Payload {
-    private static final String separator = "#";
+    private static final String separator = ",";
     public Boolean isActive;
     public PayloadType type;
     public String key;
@@ -23,12 +22,24 @@ public class Payload {
      * @return Deserialized Payload object
      */
     public static Payload fromString(String serialized) {
-        String[] components = serialized.split(separator);
-        assert components.length == 4;
+        boolean isActive = true;
 
-        boolean isActive = Objects.equals(components[0], "1");
-        PayloadType payloadType = PayloadType.valueOf(components[1]);
-        return new Payload(isActive, payloadType, components[2], components[3]);
+        // In imported files, inactive parameters are marked with '#'
+        if (serialized.startsWith("#")) {
+            isActive = false;
+            serialized = serialized.substring(1);
+        }
+        // Otherwise, check if the string starts with a zero or one
+        else if (serialized.startsWith("0") || serialized.startsWith("1")) {
+            isActive = serialized.charAt(0) == '1';
+            serialized = serialized.substring(2);
+        }
+
+        String[] components = serialized.split(separator, 3);
+        assert components.length == 3;
+
+        PayloadType payloadType = PayloadType.valueOf(components[0].toUpperCase());
+        return new Payload(isActive, payloadType, components[1], components[2]);
     }
 
     public Boolean isActive() {
@@ -72,7 +83,7 @@ public class Payload {
         String out = "";
         out += (isActive) ? "1" : "0";
         out += separator;
-        out += type.name();
+        out += type.name().toLowerCase();
         out += separator;
         out += key;
         out += separator;
