@@ -7,11 +7,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class PayloadsTableModel extends AbstractTableModel {
-    private final List<Payload> payloads;
+    private List<Payload> payloads;
 
     private final String[] columnNames = {
             "Active?",
@@ -33,9 +32,9 @@ public class PayloadsTableModel extends AbstractTableModel {
     public PayloadsTableModel(Preferences preferences) {
         this.preferences = preferences;
         if (preferences.getInteger(KEY_NUM_ROWS) != null) {
-            payloads = loadPayloadsFromPersistence(preferences);
+            loadPayloadsFromPersistence(preferences);
         } else {
-            payloads = loadStoredPayloads();
+            loadDefaults();
         }
     }
 
@@ -125,63 +124,46 @@ public class PayloadsTableModel extends AbstractTableModel {
         return payloads.get(index);
     }
 
-    public List<Payload> loadPayloadsFromPersistence(Preferences preferences) {
+    public void loadPayloadsFromPersistence(Preferences preferences) {
         int numRows = preferences.getInteger(KEY_NUM_ROWS);
-        List<Payload> settings = new ArrayList<>(numRows);
+        payloads = new ArrayList<>(numRows);
         for (int i = 0; i < numRows; ++i) {
             String serialized = preferences.getString(KEY_ROW + i);
             // logging.logToOutput("restore " + serialized);
             Payload payload = Payload.fromString(serialized);
-            settings.add(i, payload);
+            payloads.add(i, payload);
         }
-        return settings;
     }
 
-    public List<Payload> loadStoredPayloads() {
-        List<Payload> settings = new ArrayList<>();
+    public void loadDefaults() {
+        loadStoredPayloads(getClass().getResourceAsStream("/injections"));
+    }
 
-        // Read resource file and add all items to list
-        InputStream injectionResource = getClass().getResourceAsStream("/injections");
-        if (injectionResource != null) {
-            Scanner s = new Scanner(injectionResource, StandardCharsets.UTF_8).useDelimiter("\\n");
+    public void loadStoredPayloads(InputStream inputStream) {
+        payloads = new ArrayList<>();
+
+        // Read input stream and add all items to list
+        if (inputStream != null) {
+            Scanner s = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\n");
+            int numRows = 0;
             while (s.hasNextLine()) {
                 String line = s.nextLine();
 
                 // Comments start with ';'
-                if (line.startsWith(";"))
+                // For backwards compatibility, the prefix '# ' is also treated as a comment
+                if (line.startsWith(";") || line.startsWith("# "))
                     continue;
 
-                // Inactive parameters are marked with '#'
-                // Not ideal, but it works™
-                // -> need a better solution
-                Boolean isActive = Boolean.TRUE;
-                if (line.startsWith("#")) {
-                    isActive = Boolean.FALSE;
-                    line = line.substring(1);
-                }
-
-                String[] split = line.split(",", 3);
-
-                PayloadType type = null;
-                if (Objects.equals(split[0], "header")) {
-                    type = PayloadType.HEADER;
-                }
-                if (Objects.equals(split[0], "param")) {
-                    type = PayloadType.PARAM;
-                }
-
-                if (type == null) {
-                    // logging.logToOutput("Invalid injection point: " + line);
-                    continue;
-                }
-
-                settings.add(new Payload(isActive, type, split[1], split[2]));
-                //logging.logToOutput("Added " + Arrays.toString(split) + ", active: " + isActive);
+                // Parse line
+                Payload payload = Payload.fromString(line);
+                payloads.add(payload);
+                preferences.setString(KEY_ROW + numRows, payload.toString());
+                numRows++;
             }
+            preferences.setInteger(KEY_NUM_ROWS, numRows);
             s.close();
         }
 
-        return settings;
     }
 
 }
