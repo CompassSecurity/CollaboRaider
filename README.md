@@ -12,7 +12,7 @@ All features from the original [Collaborator Everywhere](https://github.com/port
 - Payloads can be constructed with a placeholder that is replaces with the Host header value of the original request
 
 New features:
-- Payloads can be added, modified, deleted, enabled or disabled in a new tab 
+- Payloads can be added, modified, deleted, enabled or disabled in a new tab. Additionally, payloads can be imported from a file.
 - All received interactions are displayed in a new tab similar to the built-in Collaborator
 - Requests that caused an interaction are highlighted in the Proxy history
 - Added placeholders to use the value of the Origin and Referer header fields in a payload
