@@ -2,7 +2,7 @@ package ch.csnc.gui.components;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.io.*;
 
 public class FileChooser extends JFileChooser {
     Component parentComponent;
@@ -27,5 +27,29 @@ public class FileChooser extends JFileChooser {
         } else {
             super.approveSelection();
         }
+    }
+
+    public String saveFile(String data) throws IOException {
+        int returnVal = showSaveDialog(parentComponent);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = getSelectedFile();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(data);
+            writer.close();
+            return file.getAbsolutePath();
+        } else {
+            return "none";
+        }
+    }
+
+    public InputStream openFile() throws FileNotFoundException {
+        int returnVal = showOpenDialog(parentComponent);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = getSelectedFile();
+            InputStream inputStream = new FileInputStream(file);
+            return inputStream;
+        }
+        return null;
     }
 }
