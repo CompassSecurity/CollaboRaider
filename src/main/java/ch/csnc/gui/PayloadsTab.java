@@ -1,15 +1,21 @@
 package ch.csnc.gui;
 
 import burp.api.montoya.MontoyaApi;
+import ch.csnc.gui.components.FileChooser;
 import ch.csnc.gui.payloads.DescriptionLabel;
 import ch.csnc.gui.payloads.AddPayloadDialog;
 import ch.csnc.gui.payloads.ButtonPanel;
+import ch.csnc.payload.Payload;
 import ch.csnc.payload.PayloadsTableModel;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class PayloadsTab extends JPanel {
     public final String TAB_TITLE = "Payloads";
@@ -17,8 +23,6 @@ public class PayloadsTab extends JPanel {
     private final MontoyaApi montoyaApi;
     private final Frame suiteFrame;
     JTable table;
-    private JDialog dialog;
-    private JLabel testLabel;
 
     public PayloadsTab(MontoyaApi montoyaApi, PayloadsTableModel payloadsTableModel) {
         this.payloadsTableModel = payloadsTableModel;
@@ -29,12 +33,11 @@ public class PayloadsTab extends JPanel {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        JPanel buttonPanel = new ButtonPanel(this::onClickAddButton,
-                                             this::onClickRemoveButton
-                                             //null,
-                                             //null,
-                                             //null,
-                                             //null
+        JPanel buttonPanel = new ButtonPanel(this::onClickAddButton
+                                             , this::onClickRemoveButton
+                                             , this::onClickImportButton
+                                             , this::onClickExportButton
+                                             , this::onClickRestoreButton
                                              );
         JScrollPane tablePanel = createTablePanel();
         JLabel descriptionLabel = new DescriptionLabel();
@@ -66,7 +69,6 @@ public class PayloadsTab extends JPanel {
         add(descriptionLabel, gbc);
     }
 
-
     private void onClickRemoveButton() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length == 0) {
@@ -92,6 +94,51 @@ public class PayloadsTab extends JPanel {
     private void onClickAddButton() {
         AddPayloadDialog addPayloadDialog = new AddPayloadDialog(suiteFrame, payloadsTableModel::add);
         addPayloadDialog.setVisible(true);
+    }
+
+    private void onClickImportButton() {
+        FileChooser fileChooser;
+
+        fileChooser = new FileChooser(this);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setSelectedFile(new File("collaboraider_payloads.csv"));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("csv file", "csv"));
+
+        try (InputStream inputStream = fileChooser.openFile()) {
+            payloadsTableModel.loadStoredPayloads(inputStream);
+            payloadsTableModel.fireTableDataChanged();
+        }
+        catch (IOException e) {
+            JOptionPane.showMessageDialog(suiteFrame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
+
+    private void onClickExportButton() {
+        FileChooser fileChooser;
+
+        fileChooser = new FileChooser(this);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setSelectedFile(new File("collaboraider_payloads.csv"));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("csv file", "csv"));
+
+        StringBuilder output = new StringBuilder();
+        for (Payload p : payloadsTableModel.getPayloads()) {
+            output.append(p.toString())
+                  .append("\n");
+        }
+
+        try {
+            montoyaApi.logging().logToOutput(fileChooser.saveFile(output.toString()));
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(suiteFrame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+    private void onClickRestoreButton() {
+        payloadsTableModel.loadDefaults();
+        payloadsTableModel.fireTableDataChanged();
     }
 
 

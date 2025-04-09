@@ -4,13 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ButtonPanel extends JPanel {
-    public ButtonPanel(Runnable onClickAddButton,
-                       Runnable onClickRemoveButton
-                       //Runnable onClickUpButton,
-                       //Runnable onClickDownButton,
-                       //Runnable onClickImportButton,
-                       //Runnable onClickExportButton
-                       ) {
+    public ButtonPanel(Runnable onClickAddButton
+            , Runnable onClickRemoveButton
+            //, Runnable onClickUpButton,
+            //, Runnable onClickDownButton,
+            , Runnable onClickImportButton
+            , Runnable onClickExportButton
+            , Runnable onClickRestoreButton
+    ) {
         setLayout(new GridBagLayout());
         // buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -45,6 +46,7 @@ public class ButtonPanel extends JPanel {
         gbc.insets = new Insets(0, 0, 15, 0);
         add(downButton, gbc);
         gbc.gridy++;
+         */
 
         JButton importButton = new JButton("Import");
         importButton.addActionListener(e -> onClickImportButton.run());
@@ -55,9 +57,13 @@ public class ButtonPanel extends JPanel {
         JButton exportButton = new JButton("Export");
         exportButton.addActionListener(e -> onClickExportButton.run());
         gbc.insets = new Insets(0, 0, 15, 0);
-        // Set y-weight of last component to 1 for vertical adjustment
-        //gbc.weighty = 1.0;
         add(exportButton, gbc);
-         */
+        gbc.gridy++;
+
+        JButton restoreButton = new JButton("Restore Defaults");
+        restoreButton.addActionListener(e -> onClickRestoreButton.run());
+        gbc.insets = new Insets(0, 0, 15, 0);
+        add(restoreButton, gbc);
+        gbc.gridy++;
     }
 }
