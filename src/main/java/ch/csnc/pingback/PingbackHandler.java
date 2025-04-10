@@ -67,11 +67,10 @@ public class PingbackHandler {
         // Log to output
         montoyaApi.logging()
                   .logToOutput(String.format(
-                          "Got interaction %s (%s) from IP %s. Own id is %s. Found %d corresponding responses",
+                          "Got interaction %s (%s) from IP %s. Found %d corresponding responses",
                           interaction.type().name(),
                           interaction.id(),
                           interaction.clientIp(),
-                          settings.getCheckIpPayload().id().toString(),
                           proxyList.size()));
 
         // Process each request
