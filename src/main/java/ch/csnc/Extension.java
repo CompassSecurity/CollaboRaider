@@ -76,7 +76,7 @@ public class Extension implements BurpExtension {
         // Register Proxy handler
         montoyaApi.proxy().registerRequestHandler(new CustomProxyRequestHandler(logging,
                                                                                 settingsModel.getCollaboratorClient(),
-                                                                                payloadsTableModel.getPayloads()));
+                                                                                payloadsTableModel));
 
         // Register unload callback
         montoyaApi.extension().registerUnloadingHandler(() -> {

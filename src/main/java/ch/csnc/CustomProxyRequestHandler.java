@@ -9,19 +9,20 @@ import burp.api.montoya.proxy.http.ProxyRequestHandler;
 import burp.api.montoya.proxy.http.ProxyRequestReceivedAction;
 import burp.api.montoya.proxy.http.ProxyRequestToBeSentAction;
 import ch.csnc.payload.Payload;
+import ch.csnc.payload.PayloadsTableModel;
 
 import java.util.*;
 
 public class CustomProxyRequestHandler implements ProxyRequestHandler {
     private final Logging logging;
     private final CollaboratorClient collaboratorClient;
-    private final List<Payload> payloads;
+    private final PayloadsTableModel payloadsTableModel;
 
 
-    public CustomProxyRequestHandler(Logging logging, CollaboratorClient collaboratorClient, List<Payload> payloads) {
+    public CustomProxyRequestHandler(Logging logging, CollaboratorClient collaboratorClient, PayloadsTableModel payloadsTableModel) {
         this.logging = logging;
         this.collaboratorClient = collaboratorClient;
-        this.payloads = payloads;
+        this.payloadsTableModel = payloadsTableModel;
 
         logging.logToOutput("Custom proxy request handler created.");
     }
@@ -40,7 +41,7 @@ public class CustomProxyRequestHandler implements ProxyRequestHandler {
 
         HttpRequest newRequest = interceptedRequest.withHeader("Cache-Control", "no-transform");
 
-        for (Payload payload : payloads) {
+        for (Payload payload : payloadsTableModel.getPayloads()) {
             // Only consider active items
             if (!payload.isActive)
                 continue;
