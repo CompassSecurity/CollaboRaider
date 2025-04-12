@@ -14,9 +14,11 @@ import java.util.List;
 
 public class PingbackAuditIssue implements AuditIssue {
     Pingback pingback;
+    AuditIssueSeverity severity;
 
-    PingbackAuditIssue(Pingback pingback) {
+    PingbackAuditIssue(Pingback pingback, AuditIssueSeverity severity) {
         this.pingback = pingback;
+        this.severity = severity;
     }
 
     @Override
@@ -52,10 +54,7 @@ public class PingbackAuditIssue implements AuditIssue {
 
     @Override
     public AuditIssueSeverity severity() {
-        if (pingback.fromOwnIP)
-            return AuditIssueSeverity.LOW;
-        else
-            return AuditIssueSeverity.HIGH;
+        return severity;
     }
 
     @Override

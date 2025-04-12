@@ -2,8 +2,10 @@ package ch.csnc.pingback;
 
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.collaborator.Interaction;
+import burp.api.montoya.collaborator.InteractionType;
 import burp.api.montoya.persistence.PersistedObject;
 import burp.api.montoya.proxy.ProxyHttpRequestResponse;
+import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
 import ch.csnc.settings.SettingsModel;
 
 import java.util.ArrayList;
@@ -115,8 +117,22 @@ public class PingbackHandler {
         // Highlight in Proxy
         item.annotations().setHighlightColor(settings.getProxyHighlightColor());
 
+
+        // Set severity
+        AuditIssueSeverity severity;
+        if (fromOwnIP)
+            severity = AuditIssueSeverity.LOW;
+        else if (interaction.type() == InteractionType.DNS)
+            severity = settings.getPingbackSeverityDNS();
+        else if (interaction.type() == InteractionType.HTTP)
+            severity = settings.getPingbackSeverityHTTP();
+        else if (interaction.type() == InteractionType.SMTP)
+            severity = settings.getPingbackSeveritySMTP();
+        else
+            severity = AuditIssueSeverity.FALSE_POSITIVE;
+
         // Create audit issue
-        PingbackAuditIssue issue = new PingbackAuditIssue(pingback);
+        PingbackAuditIssue issue = new PingbackAuditIssue(pingback, severity);
         montoyaApi.siteMap().add(issue);
         montoyaApi.logging().logToOutput(" -> added issue.");
 
