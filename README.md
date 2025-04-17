@@ -1,23 +1,28 @@
 # Description
-This extension is an improved version of the popular Burp Extension [Collaborator Everywhere](https://github.com/portswigger/collaborator-everywhere) which was developed by James '[albinowax](https://github.com/albinowax)' Kettle. It helps discovering SSRF vulnerabilities and other misconfigurations by automatically injecting Collaborator URLs in various headers or URL parameters. If one of these URLs is resolved or fetched by the server, a notification is raised and the received interaction can be analyzed.
+This extension is an improved version of the popular Burp Extension [Collaborator Everywhere](https://github.com/portswigger/collaborator-everywhere) which was developed by James '[albinowax](https://github.com/albinowax)' Kettle. 
+It helps to discover SSRF vulnerabilities and other misconfigurations by automatically injecting Collaborator URLs in various headers or URL parameters. 
+If one of these URLs is resolved or fetched by the server, a notification is raised and the received interaction can be analyzed.
+Payloads can be easily configured in a new Extension tab. Additionally, all received interactions are listed in a table. 
 
 # Features
 All features from the original [Collaborator Everywhere](https://github.com/portswigger/collaborator-everywhere) extension are covered:
-- Insert a freshly generated Collaborator payload to certain headers in every request to an in-scope host
-- Raise an issue if a request to one of these Collaborator URLs has been received
-- Display detailed information about the request in the issue and which payload caused it
-- Show time difference between the original request and the received interaction
-- Check own external IP address and add a disclaimer if the interaction was received from the own address
-- Includes payloads to modify HTTP header fields and URL parameters
-- Payloads can be constructed with a placeholder that is replaces with the Host header value of the original request
+- Insert a freshly generated Collaborator payload to certain headers in every request to an in-scope host.
+- Raise an issue if a request to one of these Collaborator URLs has been received.
+- Display detailed information about the request in the issue and which payload caused it.
+- Show time difference between the original request and the received interaction.
+- Check own external IP address and add a disclaimer if the interaction was received from the own address.
+- Includes payloads to modify HTTP header fields and URL parameters.
+- Payloads can be constructed with a placeholder that is replaced with the Host header value of the original request.
 
 New features:
-- Payloads can be added, modified, deleted, enabled or disabled in a new tab. Additionally, payloads can be imported from a file. See [payloads](payloads) for examples.
-- All received interactions are displayed in a new tab similar to the built-in Collaborator
-- Requests that caused an interaction are highlighted in the Proxy history
-- Added placeholders to use the value of the Origin and Referer header fields in a payload
-- Interactions and settings are stored persistently in the project file
-- Extension is based on the new Montoya API
+- Payloads can be added, modified, deleted, enabled or disabled in a new tab.
+- Additionally, payloads can be imported from a file. See [payloads](payloads) for examples.
+- All received interactions are displayed in a new tab similar to the built-in Collaborator, with more details provided for individual entries.
+- Requests that caused an interaction are highlighted in the Proxy history.
+- Added new placeholders to use the value of the Origin and Referer header fields in a payload.
+- Interactions are stored persistently in the project file.
+- Settings are stored in Burp's user settings and survive a reload of the extension.
+- The extension is based on the new Montoya API.
 
 # Installation
 ## Manual Installation
