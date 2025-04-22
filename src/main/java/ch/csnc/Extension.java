@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Extension implements BurpExtension {
-    public static final String name = "CollaboRaider";
+    public static final String name = "Collaborator Everywhere";
 
     private MontoyaApi montoyaApi;
     private Logging logging;
