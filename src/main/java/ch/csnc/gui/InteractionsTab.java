@@ -11,6 +11,8 @@ import ch.csnc.pingback.Pingback;
 import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 public class InteractionsTab extends JSplitPane {
@@ -27,10 +29,12 @@ public class InteractionsTab extends JSplitPane {
     RawEditor collaboratorSMTPViewer;
     JTable table;
     JTabbedPane tabbedPane;
+    PingbackTableModel tableModel;
 
     public InteractionsTab(MontoyaApi api, PingbackTableModel tableModel, SettingsModel settingsModel) {
         this.api = api;
         this.settingsModel = settingsModel;
+        this.tableModel = tableModel;
 
         setName(TAB_TITLE);
 
@@ -148,14 +152,31 @@ public class InteractionsTab extends JSplitPane {
             }
         };
 
-        // TODO: popup menu
+        // Popup menu
         JPopupMenu popup = new JPopupMenu();
-        popup.add( new JMenuItem("Add comment") );
-        popup.add( new JMenuItem("Clear interactions") );
+        JMenuItem clearInteractionsItem = new JMenuItem("Clear all interactions");
+        clearInteractionsItem.addActionListener(this::clearInteractions);
+        popup.add(clearInteractionsItem);
         table.setComponentPopupMenu(popup);
 
         table.setAutoCreateRowSorter(true);
 
         return new JScrollPane(table);
+    }
+
+    private void clearInteractions(ActionEvent e) {
+        // Confirm with a dialog
+        int confirm = JOptionPane.showOptionDialog(api.userInterface().swingUtils().suiteFrame(),
+                                                   "Delete all interactions?",
+                                                   "Confirm",
+                                                   JOptionPane.YES_NO_OPTION,
+                                                   JOptionPane.QUESTION_MESSAGE,
+                                                   null,
+                                                   null,
+                                                   null);
+        // yeet
+        if (confirm == JOptionPane.YES_OPTION) {
+            tableModel.clear();
+        }
     }
 }

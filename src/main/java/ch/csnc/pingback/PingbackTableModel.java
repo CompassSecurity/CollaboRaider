@@ -8,12 +8,17 @@
 
 package ch.csnc.pingback;
 
+import burp.api.montoya.persistence.PersistedObject;
+
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PingbackTableModel extends AbstractTableModel {
     private final List<Pingback> log;
+    private final PersistedObject persistedObject;
+    private final String KEY_PINGBACK_NUM_ROWS = "PREFERENCES_KEY_PINGBACK_NUM_ROWS";
+    private final String KEY_PINGBACK_ROW = "KEY_PINGBACK_ROW_";
 
     String[] columnNames = {
             "Time",                 // 0
@@ -24,12 +29,20 @@ public class PingbackTableModel extends AbstractTableModel {
             "Payload Target"        // 5
     };
 
-    public PingbackTableModel() {
-        this.log = new ArrayList<>();
-    }
-
-    public PingbackTableModel(List<Pingback> pingbacks) {
-        this.log = pingbacks;
+    public PingbackTableModel(PersistedObject persistedObject) {
+        this.persistedObject = persistedObject;
+        // Initialize table model with persistence
+        if (persistedObject.getInteger(KEY_PINGBACK_NUM_ROWS) != null) {
+            int numRows = persistedObject.getInteger(KEY_PINGBACK_NUM_ROWS);
+            log = new ArrayList<>(numRows);
+            for (int i = 0; i < numRows; ++i) {
+                PersistedObject object = persistedObject.getChildObject(KEY_PINGBACK_ROW + i);
+                Pingback pingback = Pingback.fromPersistence(object);
+                log.add(i, pingback);
+            }
+        } else {
+            this.log = new ArrayList<>();
+        }
     }
 
     @Override
@@ -65,8 +78,26 @@ public class PingbackTableModel extends AbstractTableModel {
 
     public synchronized void add(Pingback entry) {
         int index = log.size();
+
+        // Add to table
         log.add(entry);
+
+        // Add to persistence
+        int numRows = 0;
+        if (persistedObject.getInteger(KEY_PINGBACK_NUM_ROWS) != null) {
+            numRows = persistedObject.getInteger(KEY_PINGBACK_NUM_ROWS);
+        }
+        persistedObject.setChildObject(KEY_PINGBACK_ROW + numRows, entry.toPersistence());
+        persistedObject.setInteger(KEY_PINGBACK_NUM_ROWS, ++numRows);
+
+        // Signal GUI
         fireTableRowsInserted(index, index);
+    }
+
+    public synchronized void clear() {
+        log.clear();
+        persistedObject.deleteInteger(KEY_PINGBACK_NUM_ROWS);
+        fireTableDataChanged();
     }
 
     public synchronized Pingback get(int rowIndex) {

@@ -17,28 +17,13 @@ public class PingbackHandler {
     private final PingbackTableModel tableModel;
     private final SettingsModel settings;
 
-    private final String KEY_PINGBACK_NUM_ROWS = "PREFERENCES_KEY_PINGBACK_NUM_ROWS";
-    private final String KEY_PINGBACK_ROW = "KEY_PINGBACK_ROW_";
-
     public PingbackHandler(MontoyaApi montoyaApi,
                            SettingsModel settings) {
         this.montoyaApi = montoyaApi;
         this.settings = settings;
 
-
-        // Initialize table model with previously stored interactions
-        if (montoyaApi.persistence().extensionData().getInteger(KEY_PINGBACK_NUM_ROWS) != null) {
-            int numRows = montoyaApi.persistence().extensionData().getInteger(KEY_PINGBACK_NUM_ROWS);
-            List<Pingback> pingbacks = new ArrayList<>(numRows);
-            for (int i = 0; i < numRows; ++i) {
-                PersistedObject object = montoyaApi.persistence().extensionData().getChildObject(KEY_PINGBACK_ROW + i);
-                Pingback pingback = Pingback.fromPersistence(object);
-                pingbacks.add(i, pingback);
-            }
-            tableModel = new PingbackTableModel(pingbacks);
-        } else {
-            tableModel = new PingbackTableModel();
-        }
+        // Initialize table model with persistence
+        tableModel = new PingbackTableModel(montoyaApi.persistence().extensionData());
     }
 
     public PingbackTableModel getTableModel() {
@@ -95,14 +80,7 @@ public class PingbackHandler {
         Pingback pingback = new Pingback(item.finalRequest(), item.response(), item.time(), interaction, fromOwnIP);
         tableModel.add(pingback);
 
-        // Add to persistence
-        int numRows = 0;
-        if (montoyaApi.persistence().extensionData().getInteger(KEY_PINGBACK_NUM_ROWS) != null) {
-            numRows = montoyaApi.persistence().extensionData().getInteger(KEY_PINGBACK_NUM_ROWS);
-        }
-        montoyaApi.persistence().extensionData().setChildObject(KEY_PINGBACK_ROW + numRows, pingback.toPersistence());
-        montoyaApi.persistence().extensionData().setInteger(KEY_PINGBACK_NUM_ROWS, ++numRows);
-
+        // Log to output
         montoyaApi.logging().logToOutput(" -> added to table.");
         montoyaApi.logging().logToOutput(" -> #entries: " + tableModel.getRowCount());
 
@@ -135,6 +113,5 @@ public class PingbackHandler {
         PingbackAuditIssue issue = new PingbackAuditIssue(pingback, severity);
         montoyaApi.siteMap().add(issue);
         montoyaApi.logging().logToOutput(" -> added issue.");
-
     }
 }
