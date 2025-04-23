@@ -1,2 +1,1 @@
-rootProject.name = "CollaboRaider"
-
+rootProject.name = "CollaboratorEverywhere"
