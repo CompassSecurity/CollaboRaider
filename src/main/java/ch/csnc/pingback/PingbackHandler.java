@@ -54,11 +54,12 @@ public class PingbackHandler {
         // Log to output
         montoyaApi.logging()
                   .logToOutput(String.format(
-                          "Got interaction %s (%s) from IP %s. Found %d corresponding responses",
+                          "Got interaction %s (%s) from IP %s. Found %d corresponding response%s.",
                           interaction.type().name(),
                           interaction.id(),
-                          interaction.clientIp(),
-                          proxyList.size()));
+                          interaction.clientIp().getHostAddress(),
+                          proxyList.size(),
+                          (proxyList.size() == 1) ? "" : "s"));
 
         // Process each request
         for (ProxyHttpRequestResponse item : proxyList) {
@@ -81,8 +82,8 @@ public class PingbackHandler {
         tableModel.add(pingback);
 
         // Log to output
-        montoyaApi.logging().logToOutput(" -> added to table.");
-        montoyaApi.logging().logToOutput(" -> #entries: " + tableModel.getRowCount());
+        // montoyaApi.logging().logToOutput(" -> added to table.");
+        // montoyaApi.logging().logToOutput(" -> #entries: " + tableModel.getRowCount());
 
         // Set comment and highlight in Proxy tab (if enabled)
         if (settings.getCommentsEnabled()) {
@@ -112,6 +113,6 @@ public class PingbackHandler {
         // Create audit issue
         PingbackAuditIssue issue = new PingbackAuditIssue(pingback, severity);
         montoyaApi.siteMap().add(issue);
-        montoyaApi.logging().logToOutput(" -> added issue.");
+        // montoyaApi.logging().logToOutput(" -> added issue.");
     }
 }
