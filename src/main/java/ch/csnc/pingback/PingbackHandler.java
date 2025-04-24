@@ -3,12 +3,11 @@ package ch.csnc.pingback;
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.collaborator.Interaction;
 import burp.api.montoya.collaborator.InteractionType;
-import burp.api.montoya.persistence.PersistedObject;
 import burp.api.montoya.proxy.ProxyHttpRequestResponse;
 import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
+import ch.csnc.Extension;
 import ch.csnc.settings.SettingsModel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,7 +21,7 @@ public class PingbackHandler {
         this.montoyaApi = montoyaApi;
         this.settings = settings;
 
-        // Initialize table model with persistence
+        // Initialize table model from persistence data
         tableModel = new PingbackTableModel(montoyaApi.persistence().extensionData());
     }
 
@@ -38,7 +37,7 @@ public class PingbackHandler {
             montoyaApi.logging()
                       .logToOutput("Own IP (%s): %s".formatted(interaction.type().name(),
                                                                interaction.clientIp().getHostAddress()));
-            // settings.ownIPAddresses.add(interaction.clientIp().getHostAddress());
+            // Add to list of own addresses
             settings.getOwnIPAddresses().add(interaction.clientIp().getHostAddress());
             return;
         }
@@ -88,14 +87,15 @@ public class PingbackHandler {
         // Set comment and highlight in Proxy tab (if enabled)
         if (settings.getCommentsEnabled()) {
             item.annotations()
-                .setNotes("CollaboRaider: Received %s pingback for %s %s".formatted(interaction.type().name(),
-                                                                                    pingback.getPayloadType(),
-                                                                                    pingback.getPayloadKey()));
+                .setNotes("%s: Received %s pingback for %s %s".formatted(
+                        Extension.name,
+                        interaction.type().name(),
+                        pingback.getPayloadType(),
+                        pingback.getPayloadKey()));
         }
 
         // Highlight in Proxy
         item.annotations().setHighlightColor(settings.getProxyHighlightColor());
-
 
         // Set severity
         AuditIssueSeverity severity;

@@ -2,26 +2,26 @@ package ch.csnc;
 
 import burp.api.montoya.BurpExtension;
 import burp.api.montoya.MontoyaApi;
+import burp.api.montoya.collaborator.CollaboratorClient;
+import burp.api.montoya.collaborator.SecretKey;
 import burp.api.montoya.logging.Logging;
 import ch.csnc.gui.MainTab;
 import ch.csnc.pingback.PingbackHandler;
 import ch.csnc.payload.PayloadsTableModel;
 import ch.csnc.settings.SettingsModel;
 
+import javax.swing.*;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class Extension implements BurpExtension {
     public static final String name = "Collaborator Everywhere";
-
-    private MontoyaApi montoyaApi;
     private Logging logging;
 
     @Override
     public void initialize(MontoyaApi montoyaApi) {
         // Initialize extension
         montoyaApi.extension().setName(name);
-        this.montoyaApi = montoyaApi;
 
         // Write a message to output stream
         logging = montoyaApi.logging();
@@ -46,6 +46,43 @@ public class Extension implements BurpExtension {
             logging.logToError("Error loading build time. Could not find the file build-time.properties.");
         }
 
+        // Create collaborator client
+        String storedCollaboratorKey = settingsModel.getCollaboratorSecret();
+        CollaboratorClient collaboratorClient;
+        try {
+            if (storedCollaboratorKey == null) {
+                collaboratorClient = montoyaApi.collaborator().createClient();
+                String secretKey = collaboratorClient.getSecretKey().toString();
+                settingsModel.setCollaboratorSecret(secretKey);
+                montoyaApi.logging()
+                          .logToOutput("Created new CollaboratorClient with secret key " + collaboratorClient.getSecretKey());
+            } else {
+                collaboratorClient = montoyaApi.collaborator()
+                                               .restoreClient(SecretKey.secretKey(storedCollaboratorKey));
+                montoyaApi.logging()
+                          .logToOutput("Restored CollaboratorClient with existing secret key " + collaboratorClient.getSecretKey());
+            }
+            montoyaApi.logging().logToOutput("Collaborator server: " + collaboratorClient.server().address());
+            // Add to settings
+            settingsModel.addCollaboratorClient(collaboratorClient);
+        } catch (IllegalStateException e) {
+            // If Burp Collaborator is disabled, an exception is thrown
+            montoyaApi.logging()
+                      .logToOutput("Burp Collaborator is currently disabled. " +
+                                           "Please go to Settings -> Project -> Collaborator to enable it.");
+
+            JOptionPane.showOptionDialog(montoyaApi.userInterface().swingUtils().suiteFrame(),
+                                         "Burp Collaborator is currently disabled.\n" +
+                                                 "Please go to Settings -> Project -> Collaborator to enable it.",
+                                         "Collaborator Unavailable",
+                                         JOptionPane.DEFAULT_OPTION,
+                                         JOptionPane.ERROR_MESSAGE,
+                                         null,
+                                         null,
+                                         null);
+            return;
+        }
+
 
         // Check own IP by sending a request to the Collaborator server
         settingsModel.sendCheckIpPayload();
@@ -55,8 +92,9 @@ public class Extension implements BurpExtension {
         PingbackHandler pingbackHandler = new PingbackHandler(montoyaApi,
                                                               settingsModel);
 
+
         // Polling
-        BackgroundPoll backgroundPoll = new BackgroundPoll(settingsModel.getCollaboratorClient(),
+        BackgroundPoll backgroundPoll = new BackgroundPoll(collaboratorClient,
                                                            logging,
                                                            pingbackHandler,
                                                            settingsModel.getCollaboratorPollingInterval());
@@ -75,7 +113,7 @@ public class Extension implements BurpExtension {
 
         // Register Proxy handler
         montoyaApi.proxy().registerRequestHandler(new CustomProxyRequestHandler(logging,
-                                                                                settingsModel.getCollaboratorClient(),
+                                                                                collaboratorClient,
                                                                                 payloadsTableModel));
 
         // Register unload callback

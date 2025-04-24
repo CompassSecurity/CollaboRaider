@@ -3,14 +3,11 @@ package ch.csnc.settings;
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.collaborator.CollaboratorClient;
 import burp.api.montoya.collaborator.CollaboratorPayload;
-import burp.api.montoya.collaborator.SecretKey;
 import burp.api.montoya.core.HighlightColor;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.persistence.PersistedObject;
 import burp.api.montoya.persistence.Preferences;
 import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
-
-import java.util.List;
 
 public class SettingsModel {
     // Collaborator Client Polling Interval
@@ -32,8 +29,8 @@ public class SettingsModel {
     private final PersistedObject persistedObject;
     // Store own IP addresses discovered at startup
     private final OwnIPAddresses ownIPAddresses = new OwnIPAddresses();
-    // Collaborator client is initialized either with a new secret key or with a key retrieved from project storage
-    private final CollaboratorClient collaboratorClient;
+    // Collaborator client
+    private CollaboratorClient collaboratorClient;
     // Collaborator payload that is sent to determine the system's own external IP
     private CollaboratorPayload checkIpPayload;
     private String buildTime, version;
@@ -42,26 +39,18 @@ public class SettingsModel {
         this.montoyaApi = montoyaApi;
         preferences = montoyaApi.persistence().preferences();
         persistedObject = montoyaApi.persistence().extensionData();
-
-        // Create CollaboratorClient
-        String storedCollaboratorKey = persistedObject.getString(KEY_COLLABORATOR_SECRET);
-        if (storedCollaboratorKey == null) {
-            collaboratorClient = montoyaApi.collaborator().createClient();
-            String secretKey = collaboratorClient.getSecretKey().toString();
-            persistedObject.setString(KEY_COLLABORATOR_SECRET, secretKey);
-            montoyaApi.logging()
-                      .logToOutput("Created new CollaboratorClient with secret key " + collaboratorClient.getSecretKey());
-        } else {
-            String secretKey = persistedObject.getString(KEY_COLLABORATOR_SECRET);
-            collaboratorClient = montoyaApi.collaborator().restoreClient(SecretKey.secretKey(secretKey));
-            montoyaApi.logging()
-                      .logToOutput("Restored CollaboratorClient with existing secret key " + collaboratorClient.getSecretKey());
-        }
-        montoyaApi.logging().logToOutput("Collaborator server: " + collaboratorClient.server().address());
     }
 
     public OwnIPAddresses getOwnIPAddresses() {
         return ownIPAddresses;
+    }
+
+    public String getCollaboratorSecret() {
+        return persistedObject.getString(KEY_COLLABORATOR_SECRET);
+    }
+
+    public void setCollaboratorSecret(String secretKey) {
+        persistedObject.setString(KEY_COLLABORATOR_SECRET, secretKey);
     }
 
     public boolean getCommentsEnabled() {
@@ -176,8 +165,8 @@ public class SettingsModel {
         }).start();
     }
 
-    public CollaboratorClient getCollaboratorClient() {
-        return collaboratorClient;
+    public void addCollaboratorClient(CollaboratorClient collaboratorClient) {
+        this.collaboratorClient = collaboratorClient;
     }
 
     public String getBuildTime() {
@@ -188,12 +177,12 @@ public class SettingsModel {
         this.buildTime = buildTime;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
     public String getVersion() {
         return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public enum ActionForOwnIP {
