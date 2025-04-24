@@ -83,7 +83,8 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
         gbc.insets = new Insets(0, leftMargin, 0, 0);
         JButton ipRefreshButton = new JButton("Refresh");
         ipRefreshButton.setToolTipText("Refresh external IP addresses.");
-        ipRefreshButton.addActionListener(e -> settingsModel.sendCheckIpPayload());
+        // Wrap in new thread since network operations cannot be performed in the UI thread
+        ipRefreshButton.addActionListener(e -> new Thread(settingsModel::sendCheckIpPayload).start());
         add(ipRefreshButton, gbc);
 
     }

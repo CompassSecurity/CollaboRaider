@@ -6,8 +6,8 @@ import burp.api.montoya.collaborator.CollaboratorClient;
 import burp.api.montoya.collaborator.SecretKey;
 import burp.api.montoya.logging.Logging;
 import ch.csnc.gui.MainTab;
-import ch.csnc.pingback.PingbackHandler;
 import ch.csnc.payload.PayloadsTableModel;
+import ch.csnc.pingback.PingbackHandler;
 import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
@@ -65,15 +65,14 @@ public class Extension implements BurpExtension {
             montoyaApi.logging().logToOutput("Collaborator server: " + collaboratorClient.server().address());
             // Add to settings
             settingsModel.addCollaboratorClient(collaboratorClient);
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             // If Burp Collaborator is disabled, an exception is thrown
-            montoyaApi.logging()
-                      .logToOutput("Burp Collaborator is currently disabled. " +
-                                           "Please go to Settings -> Project -> Collaborator to enable it.");
+            String errorMessage = "Burp Collaborator is currently disabled.\n" +
+                    "Please go to Settings -> Project -> Collaborator to enable it, then reload the extension.";
+            montoyaApi.logging().logToOutput(errorMessage);
 
             JOptionPane.showOptionDialog(montoyaApi.userInterface().swingUtils().suiteFrame(),
-                                         "Burp Collaborator is currently disabled.\n" +
-                                                 "Please go to Settings -> Project -> Collaborator to enable it.",
+                                         errorMessage,
                                          "Collaborator Unavailable",
                                          JOptionPane.DEFAULT_OPTION,
                                          JOptionPane.ERROR_MESSAGE,
@@ -85,7 +84,24 @@ public class Extension implements BurpExtension {
 
 
         // Check own IP by sending a request to the Collaborator server
-        settingsModel.sendCheckIpPayload();
+        // Catch UnknownHostException and display a message if the lookup fails
+        try {
+            settingsModel.sendCheckIpPayload();
+        } catch (Exception e) {
+            String errorMessage = "The domain " + settingsModel.getCheckIpPayload()
+                                                               .toString() + " could not be resolved.\n" +
+                    "Please check your connection, then reload the extension.";
+            montoyaApi.logging().logToOutput(errorMessage);
+            JOptionPane.showOptionDialog(montoyaApi.userInterface().swingUtils().suiteFrame(),
+                                         errorMessage,
+                                         "Connection error",
+                                         JOptionPane.DEFAULT_OPTION,
+                                         JOptionPane.ERROR_MESSAGE,
+                                         null,
+                                         null,
+                                         null);
+            return;
+        }
 
 
         // Create Interaction handler which processes events

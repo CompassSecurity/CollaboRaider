@@ -154,15 +154,12 @@ public class SettingsModel {
 
     public void sendCheckIpPayload() {
         ownIPAddresses.init();
+            checkIpPayload = collaboratorClient.generatePayload();
+            String collaboratorURL = "http://" + checkIpPayload.toString();
+            HttpRequest checkIPRequest = HttpRequest.httpRequestFromUrl(collaboratorURL);
 
-        checkIpPayload = collaboratorClient.generatePayload();
-        String collaboratorURL = "http://" + checkIpPayload.toString();
-        HttpRequest checkIPRequest = HttpRequest.httpRequestFromUrl(collaboratorURL);
-
-        new Thread(() -> {
+            montoyaApi.logging().logToOutput("Sending request to " + collaboratorURL);
             montoyaApi.http().sendRequest(checkIPRequest);
-            montoyaApi.logging().logToOutput("Sent request to " + collaboratorURL);
-        }).start();
     }
 
     public void addCollaboratorClient(CollaboratorClient collaboratorClient) {
