@@ -48,19 +48,35 @@ The Interactions tab shows all received pingbacks. When a row is selected, more 
 </picture>
 
 ## Payloads tab
-Payloads can be configured in the Payloads tab. They can be enabled or disabled though the checkbox, or edited by double-clicking a cell. Further, new payloads can be added or existing payloads be removed.
+Payloads can be configured in the Payloads tab. They can be enabled or disabled though the checkbox, or edited by double-clicking a cell.
 <picture>
     <source media="(prefers-color-scheme: dark)" srcset="images/payloads_dark.png">
     <source media="(prefers-color-scheme: light)" srcset="images/payloads_light.png">
     <img alt="Overview of the Payloads tab, showing multiple enabled and disabled payloads" src="images/payloads_light.png">
 </picture>
 
+New payloads can be added or existing payloads be removed.
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/add_payload_dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="images/add_payload_light.png">
+    <img alt="Modal to add a new payload" src="images/add_payload_light.png">
+    </picture>
+
 ## Settings tab
-This tab allows further configurations.
+This tab allows further configuration, such as the ratings for different types of pingbacks or the behavior if an observed pingback originated from the own IP address.
 <picture>
     <source media="(prefers-color-scheme: dark)" srcset="images/settings_dark.png">
     <source media="(prefers-color-scheme: light)" srcset="images/settings_light.png">
     <img alt="Overview of the Settings tab, showing multiple settings" src="images/settings_light.png">
+</picture>
+
+## Proxy
+If enabled, the extension automatically highlights all requests for which a Collaborator pingback was received. 
+Additionally, a note is added to the request, allowing for easier filtering.
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/proxy_dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="images/proxy_light.png">
+    <img alt="Overview of the Proxy tab, showing a highlighted request" src="images/proxy_light.png">
 </picture>
 
 # Credits
