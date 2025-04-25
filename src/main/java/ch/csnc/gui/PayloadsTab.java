@@ -105,8 +105,10 @@ public class PayloadsTab extends JPanel {
         fileChooser.setFileFilter(new FileNameExtensionFilter("csv file", "csv"));
 
         try (InputStream inputStream = fileChooser.openFile()) {
-            payloadsTableModel.loadStoredPayloads(inputStream);
-            payloadsTableModel.fireTableDataChanged();
+            if (inputStream != null) {
+                payloadsTableModel.loadStoredPayloads(inputStream);
+                payloadsTableModel.fireTableDataChanged();
+            }
         }
         catch (IOException e) {
             JOptionPane.showMessageDialog(suiteFrame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
