@@ -15,11 +15,11 @@ public class AddPayloadDialog extends JDialog {
     JTextField keyField, valueField;
 
     public AddPayloadDialog(Frame suiteFrame, Consumer<Payload> handler) {
-        super();
+        super(suiteFrame, "Add new payload");
 
         this.handler = handler;
 
-        setSize(500, 400);
+        setSize(600, 400);
         setLocationRelativeTo(suiteFrame);
 
         // Panel to hold form items
@@ -42,17 +42,21 @@ public class AddPayloadDialog extends JDialog {
         valueField = new JTextField();
         String labelText = """
         <html>
-        Use %s as a placeholder for a generated Collaborator URL:
+        Use <tt>%s</tt> as a placeholder for a generated Collaborator URL:
         <br>
         eg. <tt>http://%s/file.xml</tt>
         becomes <tt>http://randomid.collaboratorserver.com/file.xml.</tt>
         
         <br><br>
         
-        Use %h as a placeholder for the host header of the original request.
+        Use <tt>%h</tt> as a placeholder for the Host header of the original request.
         <br>
-        For example, if the original request is sent to the host <tt>example.com</tt>,
+        For example, if the original request contains the header <tt>Host: example.com</tt>,
         then the payload <tt>%s@%h</tt> will become <tt>example.com@randomid.collaboratorserver.com</tt>.
+        
+        <br><br>
+        
+        Similarly, the placeholder <tt>%o</tt> can be used for the Origin header, and <tt>%r</tt> for the Referer header.
         </html>
         """;
         JLabel infoLabel = new JLabel(labelText);
