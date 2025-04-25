@@ -26,7 +26,7 @@ public class ExportSettingsPanel extends AbstractSettingsPanel {
         // Initialize file chooser
         fileChooser = new FileChooser(this);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setSelectedFile(new File("collaboraider_export.json"));
+        fileChooser.setSelectedFile(new File("collaborator_export.json"));
         fileChooser.setFileFilter(new FileNameExtensionFilter("json file", "json"));
 
         // Add listeners for buttons

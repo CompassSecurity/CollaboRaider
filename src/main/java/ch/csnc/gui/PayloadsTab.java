@@ -101,7 +101,7 @@ public class PayloadsTab extends JPanel {
 
         fileChooser = new FileChooser(this);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setSelectedFile(new File("collaboraider_payloads.csv"));
+        fileChooser.setSelectedFile(new File("collaborator_payloads.csv"));
         fileChooser.setFileFilter(new FileNameExtensionFilter("csv file", "csv"));
 
         try (InputStream inputStream = fileChooser.openFile()) {
@@ -121,7 +121,7 @@ public class PayloadsTab extends JPanel {
 
         fileChooser = new FileChooser(this);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setSelectedFile(new File("collaboraider_payloads.csv"));
+        fileChooser.setSelectedFile(new File("collaborator_payloads.csv"));
         fileChooser.setFileFilter(new FileNameExtensionFilter("csv file", "csv"));
 
         StringBuilder output = new StringBuilder();
