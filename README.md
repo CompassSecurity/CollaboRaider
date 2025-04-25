@@ -33,19 +33,35 @@ hopefully coming soon...
 # Usage
 ## Issues
 If a pingback is received, an issue is raised:
-![Issue overview](images/issues.png)
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/issue_dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="images/issue_light.png">
+    <img alt="Example of an issue raised by the extension" src="images/issue_light.png">
+</picture>
 
 ## Interactions tab
 The Interactions tab shows all received pingbacks. When a row is selected, more details are shown below.
-![Overview of the Interactions tab](images/interactions.png)
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/interactions_dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="images/interactions_light.png">
+    <img alt="Overview of the Interactions tab, showing three received pingbacks" src="images/interactions_light.png">
+</picture>
 
 ## Payloads tab
 Payloads can be configured in the Payloads tab. They can be enabled or disabled though the checkbox, or edited by double-clicking a cell. Further, new payloads can be added or existing payloads be removed.
-![Overview of the Payloads tab](images/payloads.png)
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/payloads_dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="images/payloads_light.png">
+    <img alt="Overview of the Payloads tab, showing multiple enabled and disabled payloads" src="images/payloads_light.png">
+</picture>
 
 ## Settings tab
 This tab allows further configurations.
-![Overview of the Settings tab](images/settings.png)
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/settings_dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="images/settings_light.png">
+    <img alt="Overview of the Settings tab, showing multiple settings" src="images/settings_light.png">
+</picture>
 
 # Credits
 The original Burp Extension [Collaborator Everywhere](https://github.com/portswigger/collaborator-everywhere) was initially created as a proof-of-concept for [Portswigger's blog post](https://portswigger.net/research/cracking-the-lens-targeting-https-hidden-attack-surface) on hidden server-side vulnerabilities. However, despite its popularity, the extension is quite old and no longer maintained, with the last commit being three years ago. This motivated me to rewrite the extension using the new Montoya API and add a few new features that I missed during previous pentesting assessments.
