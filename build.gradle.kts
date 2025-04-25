@@ -5,15 +5,13 @@ plugins {
     id("java")
 }
 
-version = "2.0.0"
+version = "2.0.1"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
     compileOnly("net.portswigger.burp.extensions:montoya-api:2025.2")
 }
 
