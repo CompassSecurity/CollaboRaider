@@ -12,12 +12,20 @@ public class DescriptionViewer extends JPanel {
         textPane.setContentType("text/html");
         textPane.setText(htmlText);
 
+        textPane.setMargin(new Insets(10,10,10,10));
+
         // Explicitly allow HTML content
         textPane.putClientProperty("html.disable", null);
-        setLayout(new FlowLayout(FlowLayout.LEFT));
         setOpaque(false);
 
-        add(textPane);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+
+        add(textPane, gbc);
     }
 
     public void setText(String description) {
