@@ -33,9 +33,9 @@
 <ol>
   <li>Ensure your Burp project has a Collaborator server configured (by default, Burp will use the public Collaborator server).</li>
   <li>Set your "Target &rarr; Scope". This limits where payloads are injected.</li>
-  <li>Enable or disable automatic polling as needed.</li>
-  <li>Use the context menu, or activate the extension, to inject payloads into all headers and parameters of in-scope requests.</li>
-  <li>Monitor the interaction table within the extension tab to analyze incoming responses from the Collaborator server.</li>
+  <li>Adjust your poll interval as necessary.</li>
+  <li>When using a browser proxied through Burp, the extension will inject payloads into all headers and parameters of in-scope requests, as specified by your "Payloads" tab.</li>
+  <li>Monitor the "Interactions" table within the extension tab to analyze incoming responses from the Collaborator server.</li>
 </ol>
 
 <p>This tool is particularly useful for testing out-of-band vulnerabilities in scenarios where manual injection would be time-consuming or error-prone.</p>
