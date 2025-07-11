@@ -3,11 +3,11 @@ ExtensionType: 1
 Name: Collaborator Everywhere
 RepoName: collaborator-everywhere-v2
 ScreenVersion: 2.0.1
-SerialVersion: 8
+SerialVersion: 9
 MinPlatformVersion: 19
 ProOnly: True
 Author: Andreas Brombach, Compass Security, James Kettle
 ShortDescription: Augments your proxy traffic by injecting non-invasive headers designed to reveal backend systems by causing pingbacks to Burp Collaborator.
-EntryPoint: build/libs/CollaboratorEverywhere-2.0.1.jar
+EntryPoint: CollaboratorEverywhere-2.0.1.jar
 BuildCommand: ./gradlew jar
 SupportedProducts: Pro
