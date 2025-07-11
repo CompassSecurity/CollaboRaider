@@ -1,5 +1,42 @@
-<p>This extension improves the existing CollaboratorEverywhere by James Kettle.</p>
-<p>It augments your in-scope proxy traffic by injecting non-invasive headers designed to reveal backend systems by causing pingbacks to Burp Collaborator.</p>
-<p>To use it, simply install it and browse the target website. Findings will be presented in the 'Issues' view, as well as in an additional tab.</p>
-<p>Payloads can easily be modified, enabled or disabled.</p>
-<p>For further information, please refer to the whitepaper at <a href="http://blog.portswigger.net/2017/07/cracking-lens-targeting-https-hidden.html">http://blog.portswigger.net/2017/07/cracking-lens-targeting-https-hidden.html</a></p>
+<p>This extension inserts Burp Collaborator payloads into all HTTP headers and URL parameters of in-scope traffic. It helps uncover vulnerabilities like SSRF and blind RCE by injecting payloads into every possible entry point during active testing.</p>
+
+<p><strong>Note:</strong> This extension is an improved version of the original Collaborator Everywhere, developed by James 'albinowax' Kettle. The original source code for Collaborator Everywhere can be found here: <a href="https://github.com/PortSwigger/collaborator-everywhere">https://github.com/PortSwigger/collaborator-everywhere</a></p>
+
+<h2>Features</h2>
+
+<h3>Original functionality</h3>
+
+<ul>
+  <li>Insert a freshly generated Collaborator payload to certain headers in every request to an in-scope host.</li>
+  <li>Raise an issue if a request to one of these Collaborator URLs has been received.</li>
+  <li>Display detailed information about the request in the issue and which payload caused it.</li>
+  <li>Show time difference between the original request and the received interaction.</li>
+  <li>Check own external IP address and add a disclaimer if the interaction was received from the own address.</li>
+  <li>Includes payloads to modify HTTP header fields and URL parameters.</li>
+  <li>Payloads can be constructed with a placeholder that is replaced with the Host header value of the original request.</li>
+</ul>
+
+<h3>New functionality</h3>
+
+<ul>
+  <li>Payloads can be added, modified, deleted, enabled or disabled in a new tab.</li>
+  <li>Additionally, payloads can be imported from a file. See payloads for examples.</li>
+  <li>All received interactions are displayed in a new tab similar to the built-in Collaborator, with more details provided for individual entries.</li>
+  <li>Requests that caused an interaction are highlighted in the Proxy history.</li>
+  <li>Added new placeholders to use the value of the Origin and Referer header fields in a payload.</li>
+  <li>Interactions are stored persistently in the project file.</li>
+  <li>Settings are stored in Burp's user settings and survive a reload of the extension.</li>
+</ul>
+
+<h2>Usage</h2>
+
+<ol>
+  <li>Ensure your Burp project has a Collaborator server configured (by default, Burp will use the public Collaborator server).</li>
+  <li>Set your "Target &rarr; Scope". This limits where payloads are injected.</li>
+  <li>Enable or disable automatic polling as needed.</li>
+  <li>Use the context menu, or activate the extension, to inject payloads into all headers and parameters of in-scope requests.</li>
+  <li>Monitor the interaction table within the extension tab to analyze incoming responses from the Collaborator server.</li>
+</ol>
+
+<p>This tool is particularly useful for testing out-of-band vulnerabilities in scenarios where manual injection would be time-consuming or error-prone.</p>
+
