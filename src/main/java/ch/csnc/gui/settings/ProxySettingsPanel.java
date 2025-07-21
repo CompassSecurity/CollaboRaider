@@ -25,7 +25,7 @@ public class ProxySettingsPanel extends AbstractSettingsPanel {
         });
 
         // Comments
-        String commentCheckBoxTooltip = "Add comment to request that caused a pingback in the Proxy tab.";
+        String commentCheckBoxTooltip = "Add comment to requests that caused a pingback in the Proxy tab.";
         JCheckBox commentCheckBox = new JCheckBox("Mark requests with comment");
         commentCheckBox.setSelected(settingsModel.getCommentsEnabled());
         commentCheckBox.addActionListener(e -> settingsModel.setCommentsEnabled(commentCheckBox.isSelected()));

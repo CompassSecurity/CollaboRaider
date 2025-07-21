@@ -49,9 +49,27 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
         gbc.weightx = 1;
         add(pollingIntervalChangedLabel, gbc);
 
+        // Collaborator server
+        String serverTooltip = "Address of the Collaborator server that is currently in use.";
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        JLabel serverLabel = new JLabel("Collaborator server");
+        serverLabel.setToolTipText(serverTooltip);
+        add(serverLabel, gbc);
+
+        JLabel serverAddress = new JLabel(settingsModel.getCollaboratorAddress());
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        gbc.insets = new Insets(0, leftMargin, 15, 0);
+        serverAddress.setToolTipText(serverTooltip);
+        add(serverAddress, gbc);
+
         // Observed IP addresses
         String ipTooltip = "External IP addresses of your system. This is used to distinguish whether a pingback was caused by you or by an external server.";
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.gridx = 0;
         gbc.weightx = 0;
         gbc.gridheight = 2;
@@ -77,7 +95,7 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
         ipListLabel.putClientProperty("html.disable", null);
         add(ipListLabel, gbc);
 
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.weighty = 1;
         gbc.weightx = 1;
         gbc.insets = new Insets(0, leftMargin, 0, 0);

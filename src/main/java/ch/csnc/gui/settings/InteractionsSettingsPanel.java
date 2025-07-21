@@ -15,23 +15,28 @@ public class InteractionsSettingsPanel extends AbstractSettingsPanel {
         super("Interactions");
 
         // Handle interactions from own IP
+        String interactionTooltip = "Decide what should happen if a pingback was received from the own system.";
         JLabel actionsLabel = new JLabel("Action for pingback from own IP");
+        actionsLabel.setToolTipText(interactionTooltip);
         ButtonGroup actionButtonGroup = new ButtonGroup();
         ActionListener l = e -> settingsModel.setActionForOwnIP(e.getActionCommand());
 
         JRadioButton continueButton = new JRadioButton("Report");
+        continueButton.setToolTipText(interactionTooltip + "\n-> Don't treat it in any special way, report it just like any other pingback.");
         continueButton.setSelected(settingsModel.getActionForOwnIP() == SettingsModel.ActionForOwnIP.CONTINUE);
         continueButton.setActionCommand(String.valueOf(SettingsModel.ActionForOwnIP.CONTINUE));
         continueButton.addActionListener(l);
         actionButtonGroup.add(continueButton);
 
         JRadioButton reduceButton = new JRadioButton("Report, but reduce severity to LOW");
+        reduceButton.setToolTipText(interactionTooltip + "\n-> Report it just like any other pingback, but reduce the severity rating.");
         reduceButton.setSelected(settingsModel.getActionForOwnIP() == SettingsModel.ActionForOwnIP.REDUCED_RATING);
         reduceButton.setActionCommand(String.valueOf(SettingsModel.ActionForOwnIP.REDUCED_RATING));
         reduceButton.addActionListener(l);
         actionButtonGroup.add(reduceButton);
 
         JRadioButton dropButton = new JRadioButton("Don't report");
+        dropButton.setToolTipText(interactionTooltip + "\n-> Do not report it.");
         dropButton.setSelected(settingsModel.getActionForOwnIP() == SettingsModel.ActionForOwnIP.DROP);
         dropButton.setActionCommand(String.valueOf(SettingsModel.ActionForOwnIP.DROP));
         dropButton.addActionListener(l);
@@ -39,8 +44,15 @@ public class InteractionsSettingsPanel extends AbstractSettingsPanel {
 
         // Severity
         JLabel severityLabel = new JLabel("Severity ratings for pingbacks");
+        String severityTooltip = "Choose how different pingbacks should be rated.";
+        severityLabel.setToolTipText(severityTooltip);
+
         JLabel severityDNSLabel = new JLabel("DNS");
+        String severityDNSTooltip = "Choose severity rating for DNS pingbacks.";
+        severityDNSLabel.setToolTipText(severityDNSTooltip);
+
         JComboBox<AuditIssueSeverity> severityDNS = new JComboBox<>(AuditIssueSeverity.values());
+        severityDNS.setToolTipText(severityDNSTooltip);
         severityDNS.setSelectedItem(settingsModel.getPingbackSeverityDNS());
         severityDNS.addActionListener(e -> {
             if (severityDNS.getSelectedItem() != null)
@@ -48,7 +60,11 @@ public class InteractionsSettingsPanel extends AbstractSettingsPanel {
         });
 
         JLabel severityHTTPLabel = new JLabel("HTTP");
+        String severityHTTPTooltip = "Choose severity rating for HTTP(s) pingbacks.";
+        severityHTTPLabel.setToolTipText(severityHTTPTooltip);
+
         JComboBox<AuditIssueSeverity> severityHTTP = new JComboBox<>(AuditIssueSeverity.values());
+        severityHTTP.setToolTipText(severityHTTPTooltip);
         severityHTTP.setSelectedItem(settingsModel.getPingbackSeverityHTTP());
         severityHTTP.addActionListener(e -> {
             if (severityHTTP.getSelectedItem() != null)
@@ -57,7 +73,11 @@ public class InteractionsSettingsPanel extends AbstractSettingsPanel {
 
 
         JLabel severitySMTPLabel = new JLabel("SMTP");
+        String severitySMTPTooltip = "Choose severity rating for SMTP pingbacks.";
+        severitySMTPLabel.setToolTipText(severitySMTPTooltip);
+
         JComboBox<AuditIssueSeverity> severitySMTP = new JComboBox<>(AuditIssueSeverity.values());
+        severitySMTP.setToolTipText(severitySMTPTooltip);
         severitySMTP.setSelectedItem(settingsModel.getPingbackSeveritySMTP());
         severitySMTP.addActionListener(e -> {
             if (severitySMTP.getSelectedItem() != null)
@@ -108,6 +128,6 @@ public class InteractionsSettingsPanel extends AbstractSettingsPanel {
         add(severitySMTP,
             new GBC(5, 2)
                     .setWeights(0, 1)
-                    .setMargin(0, leftMargin, 0, 0));
+                    .setMargin(0, leftMargin, bottomMarginInGroup, 0));
     }
 }

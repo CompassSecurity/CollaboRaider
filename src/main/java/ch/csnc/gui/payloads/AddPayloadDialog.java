@@ -2,6 +2,7 @@ package ch.csnc.gui.payloads;
 
 import ch.csnc.payload.Payload;
 import ch.csnc.payload.PayloadType;
+import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,10 +12,10 @@ import java.util.function.Consumer;
 public class AddPayloadDialog extends JDialog {
     Consumer<Payload> handler;
 
-    JRadioButton radioButton1, radioButton2;
+    JRadioButton radioButtonPositionParameter, radioButtonPositionHeader;
     JTextField keyField, valueField;
 
-    public AddPayloadDialog(Frame suiteFrame, Consumer<Payload> handler) {
+    public AddPayloadDialog(Frame suiteFrame, Consumer<Payload> handler, SettingsModel settingsModel) {
         super(suiteFrame, "Add new payload");
 
         this.handler = handler;
@@ -27,40 +28,54 @@ public class AddPayloadDialog extends JDialog {
 
         // Specify payload location
         JLabel payloadLabel = new JLabel("Payload location:");
+        String payloadTooltip = "Specify where the payload should be applied.";
+        payloadLabel.setToolTipText(payloadTooltip);
         ButtonGroup buttonGroup = new ButtonGroup();
-        radioButton1 = new JRadioButton(PayloadType.PARAM.label);
-        radioButton2 = new JRadioButton(PayloadType.HEADER.label);
-        buttonGroup.add(radioButton1);
-        buttonGroup.add(radioButton2);
+        radioButtonPositionParameter = new JRadioButton(PayloadType.PARAM.label);
+        radioButtonPositionParameter.setToolTipText(payloadTooltip + "\n-> Create payload as URL parameter.");
+        radioButtonPositionHeader = new JRadioButton(PayloadType.HEADER.label);
+        radioButtonPositionHeader.setToolTipText(payloadTooltip + "\n-> Create payload as HTTP Header.");
+        radioButtonPositionHeader.setSelected(true);
+        buttonGroup.add(radioButtonPositionParameter);
+        buttonGroup.add(radioButtonPositionHeader);
 
         // Key (URL Parameter name or Header name)
         JLabel keyLabel = new JLabel("Field name:");
+        String keyTooltip = "Name of the URL parameter or HTTP Header field, eg. User-Agent";
+        keyLabel.setToolTipText(keyTooltip);
         keyField = new JTextField();
+        keyField.setToolTipText(keyTooltip);
 
         // Value (Payload to be inserted)
         JLabel valueLabel = new JLabel("Payload value:");
+        String valueTooltip = "Value of the parameter or header. This should contain a Collaborator URL placeholder.";
+        valueLabel.setToolTipText(valueTooltip);
         valueField = new JTextField();
+        valueField.setToolTipText(valueTooltip);
+
+        // Helper text
         String labelText = """
         <html>
-        Use <tt>%s</tt> as a placeholder for a generated Collaborator URL:
+        Use <tt>%%s</tt> as a placeholder for a generated Collaborator URL:
         <br>
-        eg. <tt>http://%s/file.xml</tt>
-        becomes <tt>http://randomid.collaboratorserver.com/file.xml.</tt>
+        eg. <tt>http://%%s/file.xml</tt>
+        becomes <tt>http://%s/file.xml.</tt>
         
         <br><br>
         
-        Use <tt>%h</tt> as a placeholder for the Host header of the original request.
+        Use <tt>%%h</tt> as a placeholder for the Host header of the original request.
         <br>
         For example, if the original request contains the header <tt>Host: example.com</tt>,
-        then the payload <tt>%s@%h</tt> will become <tt>example.com@randomid.collaboratorserver.com</tt>.
+        then the payload <tt>%%h:%%s</tt> will become <tt>example.com:%s</tt>.
         
         <br><br>
         
-        Similarly, the placeholder <tt>%o</tt> can be used for the Origin header, and <tt>%r</tt> for the Referer header.
+        Similarly, the placeholder <tt>%%o</tt> can be used for the Origin header, and <tt>%%r</tt> for the Referer header.
         </html>
-        """;
+        """.formatted(settingsModel.getCheckIpPayload().toString(), settingsModel.getCheckIpPayload().toString());
         JLabel infoLabel = new JLabel(labelText);
         infoLabel.putClientProperty("html.disable", null);
+        infoLabel.setToolTipText("got it?");
 
 
         formPanel.setLayout(new GridBagLayout());
@@ -77,12 +92,12 @@ public class AddPayloadDialog extends JDialog {
         gbc.gridx = 1;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        formPanel.add(radioButton1, gbc);
+        formPanel.add(radioButtonPositionParameter, gbc);
 
         gbc.gridy = 1;
         gbc.gridx = 1;
         gbc.insets = new Insets(0, 25, 5, 25);
-        formPanel.add(radioButton2, gbc);
+        formPanel.add(radioButtonPositionHeader, gbc);
 
         gbc.gridy = 2;
         gbc.gridx = 0;
@@ -140,9 +155,9 @@ public class AddPayloadDialog extends JDialog {
 
     private void clickSaveButton(ActionEvent e) {
         PayloadType payloadType = null;
-        if (radioButton1.isSelected()) {
+        if (radioButtonPositionParameter.isSelected()) {
             payloadType = PayloadType.PARAM;
-        } else if (radioButton2.isSelected()) {
+        } else if (radioButtonPositionHeader.isSelected()) {
             payloadType = PayloadType.HEADER;
         }
         // Construct payload from fields and pass it to the handler
