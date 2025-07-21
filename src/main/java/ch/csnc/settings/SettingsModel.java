@@ -167,7 +167,7 @@ public class SettingsModel {
     }
 
     public String getCollaboratorAddress() {
-        return this.collaboratorClient.server().address();
+        return this.collaboratorClient.server().address().toLowerCase();
     }
 
     public String getBuildTime() {
