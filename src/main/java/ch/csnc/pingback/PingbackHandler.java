@@ -69,11 +69,13 @@ public class PingbackHandler {
 
     private void processInteractionWithProxyItem(Interaction interaction, ProxyHttpRequestResponse item) {
 
-        // Ignore request if it is to the Collaborator server itself.
+        // Ignore request if it is sent to the Collaborator server directly.
         // This covers the case that the pingback was somehow caused by the browser opening the Collaborator URL.
         // Otherwise, two issues would be created - one for the original request with the injected Collaborator URL,
         // and one for the request to open the URL.
-        if (settings.getCollaboratorAddress().equalsIgnoreCase(item.finalRequest().httpService().host())) {
+        String collaboratorServerDomain = settings.getCollaboratorAddress().toLowerCase();
+        String requestDomain = item.finalRequest().httpService().host().toLowerCase();
+        if (requestDomain.endsWith(collaboratorServerDomain)) {
             return;
         }
 
