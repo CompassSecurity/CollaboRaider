@@ -7,6 +7,7 @@ import ch.csnc.gui.payloads.AddPayloadDialog;
 import ch.csnc.gui.payloads.ButtonPanel;
 import ch.csnc.payload.Payload;
 import ch.csnc.payload.PayloadsTableModel;
+import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -22,12 +23,13 @@ public class PayloadsTab extends JPanel {
     private final PayloadsTableModel payloadsTableModel;
     private final MontoyaApi montoyaApi;
     private final Frame suiteFrame;
+    private final SettingsModel settingsModel;
     JTable table;
 
-    public PayloadsTab(MontoyaApi montoyaApi, PayloadsTableModel payloadsTableModel) {
+    public PayloadsTab(MontoyaApi montoyaApi, PayloadsTableModel payloadsTableModel, SettingsModel settingsModel) {
         this.payloadsTableModel = payloadsTableModel;
         this.montoyaApi = montoyaApi;
-
+        this.settingsModel = settingsModel;
         suiteFrame = montoyaApi.userInterface().swingUtils().suiteFrame();
 
         setLayout(new GridBagLayout());
@@ -72,7 +74,7 @@ public class PayloadsTab extends JPanel {
     private void onClickRemoveButton() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length == 0) {
-            JOptionPane.showMessageDialog(suiteFrame, "No payload selected", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(suiteFrame, "No payload selected!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             int confirm = JOptionPane.showOptionDialog(suiteFrame,
                                                        "Delete selected payloads?",
@@ -92,11 +94,23 @@ public class PayloadsTab extends JPanel {
     }
 
     private void onClickAddButton() {
-        AddPayloadDialog addPayloadDialog = new AddPayloadDialog(suiteFrame, payloadsTableModel::add);
+        AddPayloadDialog addPayloadDialog = new AddPayloadDialog(suiteFrame, payloadsTableModel::add, settingsModel);
         addPayloadDialog.setVisible(true);
     }
 
     private void onClickImportButton() {
+        int confirm = JOptionPane.showOptionDialog(suiteFrame,
+                                                   "This will replace all current payloads. Continue?",
+                                                   "Confirm",
+                                                   JOptionPane.YES_NO_OPTION,
+                                                   JOptionPane.QUESTION_MESSAGE,
+                                                   null,
+                                                   null,
+                                                   null);
+        if (confirm == JOptionPane.NO_OPTION) {
+            return;
+        }
+
         FileChooser fileChooser;
 
         fileChooser = new FileChooser(this);
@@ -139,6 +153,18 @@ public class PayloadsTab extends JPanel {
 
 
     private void onClickRestoreButton() {
+        int confirm = JOptionPane.showOptionDialog(suiteFrame,
+                                                   "This will reset all current payloads to the default settings. Continue?",
+                                                   "Confirm",
+                                                   JOptionPane.YES_NO_OPTION,
+                                                   JOptionPane.QUESTION_MESSAGE,
+                                                   null,
+                                                   null,
+                                                   null);
+        if (confirm == JOptionPane.NO_OPTION) {
+            return;
+        }
+
         payloadsTableModel.loadDefaults();
         payloadsTableModel.fireTableDataChanged();
     }

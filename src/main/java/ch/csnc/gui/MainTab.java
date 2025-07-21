@@ -10,12 +10,12 @@ import javax.swing.*;
 public class MainTab extends JTabbedPane {
     public MainTab(MontoyaApi montoyaApi,
                    PingbackTableModel pingbackTableModel,
-                   PayloadsTableModel settingsTableModel,
+                   PayloadsTableModel payloadsTableModel,
                    SettingsModel settingsModel) {
         super();
 
         InteractionsTab interactionsTab = new InteractionsTab(montoyaApi, pingbackTableModel, settingsModel);
-        PayloadsTab payloadsTab = new PayloadsTab(montoyaApi, settingsTableModel);
+        PayloadsTab payloadsTab = new PayloadsTab(montoyaApi, payloadsTableModel, settingsModel);
         SettingsTab settingsTab = new SettingsTab(settingsModel);
 
         this.addTab(interactionsTab.TAB_TITLE, interactionsTab);
