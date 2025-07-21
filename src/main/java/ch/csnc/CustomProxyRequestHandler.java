@@ -19,7 +19,9 @@ public class CustomProxyRequestHandler implements ProxyRequestHandler {
     private final PayloadsTableModel payloadsTableModel;
 
 
-    public CustomProxyRequestHandler(Logging logging, CollaboratorClient collaboratorClient, PayloadsTableModel payloadsTableModel) {
+    public CustomProxyRequestHandler(Logging logging,
+                                     CollaboratorClient collaboratorClient,
+                                     PayloadsTableModel payloadsTableModel) {
         this.logging = logging;
         this.collaboratorClient = collaboratorClient;
         this.payloadsTableModel = payloadsTableModel;
@@ -52,10 +54,22 @@ public class CustomProxyRequestHandler implements ProxyRequestHandler {
             String value = payload.getValue()
                                   .replace("%s", collaboratorClient.generatePayload().toString())
                                   .replace("%h", interceptedRequest.headerValue("Host"));
-            if (interceptedRequest.hasHeader("Origin"))
-                value = value.replace("%o", interceptedRequest.headerValue("Origin"));
-            if (interceptedRequest.hasHeader("Referer"))
-                value = value.replace("%r", interceptedRequest.headerValue("Referer"));
+
+            // If the payload uses a placeholder %o for the Origin, only continue if the request has a Origin header
+            if (value.contains("%o")) {
+                if (interceptedRequest.hasHeader("Origin"))
+                    value = value.replace("%o", interceptedRequest.headerValue("Origin"));
+                else
+                    continue;
+            }
+
+            // If the payload uses a placeholder %r for the Referer, only continue if the request has a Referer header
+            if (value.contains("%r")) {
+                if (interceptedRequest.hasHeader("Referer"))
+                    value = value.replace("%r", interceptedRequest.headerValue("Referer"));
+                else
+                    continue;
+            }
 
 
             switch (payload.getType()) {
