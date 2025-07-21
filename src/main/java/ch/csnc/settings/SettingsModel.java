@@ -166,6 +166,10 @@ public class SettingsModel {
         this.collaboratorClient = collaboratorClient;
     }
 
+    public String getCollaboratorAddress() {
+        return this.collaboratorClient.server().address();
+    }
+
     public String getBuildTime() {
         return buildTime;
     }
