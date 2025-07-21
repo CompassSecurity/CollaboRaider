@@ -11,6 +11,7 @@ import ch.csnc.pingback.Pingback;
 import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ public class InteractionsTab extends JSplitPane {
 
         // Set initial visibility to false until an entry is selected
         tabbedPane.setVisible(false);
+        tabbedPane.setMinimumSize(new Dimension(0,0));
     }
 
     private JTabbedPane constructLoggerTab()
