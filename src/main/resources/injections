@@ -1,33 +1,35 @@
 ; Lines starting with # are treated as inactive
-#param,u,http://%s/
-#param,href,http://%s/
-#param,action,http://%s/
+#param,u,https://%s/
+#param,href,https://%s/
+#param,action,https://%s/
 #param,host,%s
 #param,http_host,%s
 #param,email,root@%s
-#param,url,http://%s/
-#param,load,http://%s/
-#param,preview,http://%s/
-#param,target,http://%s/
-#param,proxy,http://%s/
-#param,from,http://%s/
-#param,src,http://%s/
-#param,ref,http://%s/
-#param,referrer,http://%s/
+#param,url,https://%s/
+#param,load,https://%s/
+#param,preview,https://%s/
+#param,target,https://%s/
+#param,proxy,https://%s/
+#param,from,https://%s/
+#param,src,https://%s/
+#param,ref,https://%s/
+#param,referrer,https://%s/
 ; %h is replaced with corresponding Host header
 ; Useful in cases like Host, Origin, etc.
-#header,Host,%s:80@%h
-#header,Origin,http://%s
+#header,Host,%h:%s
+; %o is replaced with the Origin header
+#header,Origin,https://%o.%s
 header,Contact,root@%s
 header,From,root@%s
-header,User-Agent,Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/314.15 (KHTML, like Gecko) Chrome/31.4.1592.65 Safari/314.15 <img src="http://%s">
-header,Referer,http://%s/ref
-header,X-Original-URL,http://%s/
-header,X-Wap-Profile,http://%s/wap.xml
-header,Profile,http://%s/wap.xml
-header,X-Arbitrary,http://%s/
-header,X-HTTP-DestinationURL,http://%s/
-header,X-Forwarded-Proto,http://%s/
+header,User-Agent,Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/314.15 (KHTML, like Gecko) Chrome/31.4.1592.65 Safari/314.15 <img src="//%s">
+; %r is replaced with the Referer header
+#header,Referer,https://%r.%s
+header,X-Original-URL,https://%s/
+header,X-Wap-Profile,https://%s/wap.xml
+header,Profile,https://%s/wap.xml
+header,X-Arbitrary,https://%s/
+header,X-HTTP-DestinationURL,https://%s/
+header,X-Forwarded-Proto,https://%s/
 header,X-Forwarded-Host,%s
 header,X-Forwarded-For,spoofed.%s
 header,True-Client-IP,spoofed.%s
@@ -41,5 +43,5 @@ header,Forwarded,for=spoofed.%s;by=spoofed.%s;host=spoofed.%s
 #header,X-Host,%s
 #header,Proxy-Host,%s
 #header,Destination,%s
-#header,Proxy,http://%s
+#header,Proxy,https://%s
 #header,Via,1.1 %s
