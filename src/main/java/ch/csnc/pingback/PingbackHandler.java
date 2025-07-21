@@ -69,6 +69,14 @@ public class PingbackHandler {
 
     private void processInteractionWithProxyItem(Interaction interaction, ProxyHttpRequestResponse item) {
 
+        // Ignore request if it is to the Collaborator server itself.
+        // This covers the case that the pingback was somehow caused by the browser opening the Collaborator URL.
+        // Otherwise, two issues would be created - one for the original request with the injected Collaborator URL,
+        // and one for the request to open the URL.
+        if (settings.getCollaboratorAddress().equalsIgnoreCase(item.finalRequest().httpService().host())) {
+            return;
+        }
+
         // Check if this pingback came from own IP
         boolean fromOwnIP = settings.getOwnIPAddresses().contains(interaction.clientIp().getHostAddress());
         // If setting is enabled, ignore this request
