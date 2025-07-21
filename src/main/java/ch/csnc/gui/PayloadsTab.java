@@ -42,7 +42,7 @@ public class PayloadsTab extends JPanel {
                                              , this::onClickRestoreButton
                                              );
         JScrollPane tablePanel = createTablePanel();
-        JLabel descriptionLabel = new DescriptionLabel();
+        JLabel descriptionLabel = new DescriptionLabel(settingsModel);
 
         gbc.anchor = GridBagConstraints.FIRST_LINE_START;
 
