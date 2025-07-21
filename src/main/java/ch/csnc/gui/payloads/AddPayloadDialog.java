@@ -7,6 +7,8 @@ import ch.csnc.settings.SettingsModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.function.Consumer;
 
 public class AddPayloadDialog extends JDialog {
@@ -14,11 +16,14 @@ public class AddPayloadDialog extends JDialog {
 
     JRadioButton radioButtonPositionParameter, radioButtonPositionHeader;
     JTextField keyField, valueField;
+    JTextArea previewText;
+    SettingsModel settingsModel;
 
     public AddPayloadDialog(Frame suiteFrame, Consumer<Payload> handler, SettingsModel settingsModel) {
         super(suiteFrame, "Add new payload");
 
         this.handler = handler;
+        this.settingsModel = settingsModel;
 
         setSize(600, 400);
         setLocationRelativeTo(suiteFrame);
@@ -33,9 +38,11 @@ public class AddPayloadDialog extends JDialog {
         ButtonGroup buttonGroup = new ButtonGroup();
         radioButtonPositionParameter = new JRadioButton(PayloadType.PARAM.label);
         radioButtonPositionParameter.setToolTipText(payloadTooltip + "\n-> Create payload as URL parameter.");
+        radioButtonPositionParameter.addActionListener(e -> updatePreview());
         radioButtonPositionHeader = new JRadioButton(PayloadType.HEADER.label);
         radioButtonPositionHeader.setToolTipText(payloadTooltip + "\n-> Create payload as HTTP Header.");
         radioButtonPositionHeader.setSelected(true);
+        radioButtonPositionHeader.addActionListener(e -> updatePreview());
         buttonGroup.add(radioButtonPositionParameter);
         buttonGroup.add(radioButtonPositionHeader);
 
@@ -45,6 +52,13 @@ public class AddPayloadDialog extends JDialog {
         keyLabel.setToolTipText(keyTooltip);
         keyField = new JTextField();
         keyField.setToolTipText(keyTooltip);
+        keyField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                e.consume();
+                updatePreview();
+            }
+        });
 
         // Value (Payload to be inserted)
         JLabel valueLabel = new JLabel("Payload value:");
@@ -52,6 +66,30 @@ public class AddPayloadDialog extends JDialog {
         valueLabel.setToolTipText(valueTooltip);
         valueField = new JTextField();
         valueField.setToolTipText(valueTooltip);
+        valueField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                e.consume();
+                updatePreview();
+            }
+        });
+
+        // Preview
+        // Use a JTextArea which wraps large strings to multiple lines
+        JLabel previewLabel = new JLabel("Preview:");
+        String previewTooltip = "Preview of the payload after evaluating the placeholders.";
+        previewLabel.setToolTipText(previewTooltip);
+        previewText = new JTextArea("");
+        previewText.setWrapStyleWord(true);
+        previewText.setLineWrap(true);
+        previewText.setOpaque(false);
+        previewText.setEditable(false);
+        previewText.setFocusable(false);
+        previewText.setBackground(UIManager.getColor("Label.background"));
+        int defaultFontSize = UIManager.getFont("Label.font").getSize();
+        previewText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, defaultFontSize));
+        previewText.setBorder(UIManager.getBorder("Label.border"));
+        previewText.setToolTipText(previewTooltip);
 
         // Helper text
         String labelText = """
@@ -124,6 +162,19 @@ public class AddPayloadDialog extends JDialog {
 
         gbc.gridy = 4;
         gbc.gridx = 0;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        formPanel.add(previewLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        formPanel.add(previewText, gbc);
+
+        gbc.gridy = 5;
+        gbc.gridx = 0;
         gbc.gridwidth = 2;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.BOTH;
@@ -166,5 +217,22 @@ public class AddPayloadDialog extends JDialog {
         //payloadsTableModel.add(payload);
         // Close dialog
         dispose();
+    }
+
+    private void updatePreview() {
+        // Use a non-breaking space for the separator between header field name and value
+        String separator = radioButtonPositionHeader.isSelected() ? ":\u00A0" : "=";
+        String key = keyField.getText();
+        String value = valueField.getText();
+
+        // Apply payload replacement rules with test data
+        value = value
+                  .replace("%s", settingsModel.getCheckIpPayload().toString())
+                  .replace("%h", "examplehost.com")
+                  .replace("%o", "exampleorigin.com")
+                  .replace("%r", "examplereferer.com");
+
+        String output = "%s%s%s".formatted(key, separator, value);
+        previewText.setText(output);
     }
 }
