@@ -285,7 +285,7 @@ public class Pingback {
 
         // Show details for DNS pingback
         if (interaction.type() == InteractionType.DNS && interaction.dnsDetails().isPresent()) {
-            data += "<b>DNS Details:</b><br>";
+            data += "<b>DNS Pingback Details:</b><br>";
             data += "Query type: <b>%s</b><br>"
                     .formatted(interaction.dnsDetails().get().queryType().name());
             // TODO: Parse raw DNS query to get more info
@@ -295,7 +295,7 @@ public class Pingback {
 
         // HTTP details
         if (interaction.type() == InteractionType.HTTP && interaction.httpDetails().isPresent()) {
-            data += "<b>HTTP Details:</b><br>";
+            data += "<b>HTTP Pingback Details:</b><br>";
             data += "Protocol: %s<br>"
                     .formatted(interaction.httpDetails().get().protocol().name());
             String rawRequest = Utils.sanitize(interaction.httpDetails().get().requestResponse().request().toString());
@@ -305,7 +305,7 @@ public class Pingback {
 
         // SMTP details
         if (interaction.type() == InteractionType.SMTP && interaction.smtpDetails().isPresent()) {
-            data += "<b>SMTP Details:</b><br>";
+            data += "<b>SMTP Pingback Details:</b><br>";
             data += "Protocol: %s<br>"
                     .formatted(interaction.smtpDetails().get().protocol().name());
             // TODO: Parse SMTP conversation to get more info

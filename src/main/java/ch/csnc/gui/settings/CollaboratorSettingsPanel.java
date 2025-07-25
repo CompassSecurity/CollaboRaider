@@ -75,7 +75,7 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
         gbc.gridheight = 2;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.insets = new Insets(0, 0, 0, 0);
-        JLabel ipLabel = new JLabel("Own IP Addresses");
+        JLabel ipLabel = new JLabel("Own IP addresses");
         ipLabel.setToolTipText(ipTooltip);
         add(ipLabel, gbc);
 

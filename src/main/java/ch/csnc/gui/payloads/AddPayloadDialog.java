@@ -109,7 +109,9 @@ public class AddPayloadDialog extends JDialog {
         <br><br>
         
         Similarly, the placeholder <tt>%%o</tt> can be used for the Origin header, and <tt>%%r</tt> for the Referer header.
-        <br>
+        
+        <br><br>
+        
         Note that a payload using the <tt>%%o</tt> placeholder is only inserted if an Origin is present in the original request. 
         The same holds for the <tt>%%r</tt> placeholder and the Referer header. 
         </html>
