@@ -5,6 +5,7 @@ import ch.csnc.pingback.Pingback;
 import ch.csnc.pingback.PingbackTableModel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.event.ActionEvent;
 
 public class InteractionListPane extends JScrollPane {
@@ -34,6 +35,10 @@ public class InteractionListPane extends JScrollPane {
                 super.changeSelection(rowIndex, columnIndex, toggle, extend);
             }
         };
+
+        // Left-align table headers
+        DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+        renderer.setHorizontalAlignment(SwingConstants.LEFT);
 
         // Popup menu
         JPopupMenu popup = new JPopupMenu();
