@@ -6,6 +6,7 @@ import ch.csnc.gui.payloads.DescriptionLabel;
 import ch.csnc.gui.payloads.AddPayloadDialog;
 import ch.csnc.gui.payloads.ButtonPanel;
 import ch.csnc.payload.Payload;
+import ch.csnc.payload.PayloadType;
 import ch.csnc.payload.PayloadsTableModel;
 import ch.csnc.settings.SettingsModel;
 
@@ -172,7 +173,44 @@ public class PayloadsTab extends JPanel {
 
 
     private JScrollPane createTablePanel() {
-        table = new JTable(payloadsTableModel);
+        table = new JTable(payloadsTableModel){
+
+            // Implement custom table cell tool tips
+            public String getToolTipText(MouseEvent e) {
+                String tooltipText = null;
+                java.awt.Point p = e.getPoint();
+                int rowIndex = convertRowIndexToModel(rowAtPoint(p));
+
+                try {
+                    Payload payload = payloadsTableModel.get(rowIndex);
+
+                    // Use a non-breaking space for the separator between header field name and value
+                    String separator = (payload.getType() == PayloadType.HEADER) ? ":\u00A0" : "=";
+                    String key = payload.getKey();
+                    String value = payload.getValue();
+
+                    // Apply payload replacement rules with test data
+                    value = value
+                            .replace("%s", settingsModel.getCheckIpPayload().toString())
+                            .replace("%h", "examplehost.com")
+                            .replace("%o", "exampleorigin.com")
+                            .replace("%r", "https://examplereferer.com/page");
+
+                    String status = (payload.isActive()) ? "" : " (disabled)";
+
+                    tooltipText = "Payload type: %s%s\n\nExample output:\n%s%s%s".formatted(
+                            payload.type.toString(),
+                            status,
+                            key, separator, value
+                    );
+                } catch (RuntimeException e1) {
+                    // catch null pointer exception if mouse is over an empty line
+                }
+
+                return tooltipText;
+            }
+        };
+
         JScrollPane scrollPane = new JScrollPane(table);
 
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
