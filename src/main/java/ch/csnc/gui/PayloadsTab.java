@@ -11,6 +11,7 @@ import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
@@ -178,14 +179,24 @@ public class PayloadsTab extends JPanel {
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
+        // Create a dummy table and use its CellRenderer
+        JTable dummyTable = new JTable();
+        DefaultTableCellRenderer leftRenderer = (DefaultTableCellRenderer) dummyTable.getTableHeader().getDefaultRenderer();
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+
         TableColumn column1 = table.getColumnModel().getColumn(0);
         column1.setPreferredWidth(60);
 
         TableColumn column2 = table.getColumnModel().getColumn(1);
         column2.setPreferredWidth(120);
+        column2.setHeaderRenderer(leftRenderer);
 
         TableColumn column3 = table.getColumnModel().getColumn(2);
         column3.setPreferredWidth(160);
+        column3.setHeaderRenderer(leftRenderer);
+
+        TableColumn column4 = table.getColumnModel().getColumn(3);
+        column4.setHeaderRenderer(leftRenderer);
 
 
         // Add component listener to adjust the last column width
