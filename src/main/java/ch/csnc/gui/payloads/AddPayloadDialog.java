@@ -235,7 +235,7 @@ public class AddPayloadDialog extends JDialog {
                   .replace("%s", settingsModel.getCheckIpPayload().toString())
                   .replace("%h", "examplehost.com")
                   .replace("%o", "exampleorigin.com")
-                  .replace("%r", "examplereferer.com");
+                  .replace("%r", "https://examplereferer.com/page");
 
         String output = "%s%s%s".formatted(key, separator, value);
         previewText.setText(output);
