@@ -85,12 +85,13 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, leftMargin, 5, 0);
         JLabel ipListLabel = new JLabel("<html>waiting for response...</html>");
-        settingsModel.getOwnIPAddresses().addObserver((o, arg) -> {
+        settingsModel.getOwnIPAddresses().addCallback(() -> {
             if (!settingsModel.getOwnIPAddresses().get().isEmpty())
                 ipListLabel.setText("<html>" + settingsModel.getOwnIPAddresses().toString() + "</html>");
             else
                 ipListLabel.setText("<html>waiting for response...</html>");
         });
+
         ipListLabel.setToolTipText(ipTooltip);
         ipListLabel.putClientProperty("html.disable", null);
         add(ipListLabel, gbc);

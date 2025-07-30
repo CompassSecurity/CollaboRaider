@@ -1,17 +1,16 @@
 package ch.csnc.settings;
 
-import burp.api.montoya.collaborator.CollaboratorPayload;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class OwnIPAddresses extends Observable {
+public class OwnIPAddresses {
     private Set<String> ipAddresses = new HashSet<>();
+    private Runnable runnable;
 
     public void init() {
         ipAddresses = new HashSet<>();
-        setChanged();
-        notifyObservers();
+        notifyListener();
     }
 
     public Set<String> get() {
@@ -24,8 +23,16 @@ public class OwnIPAddresses extends Observable {
 
     public void add(String value) {
         this.ipAddresses.add(value);
-        setChanged();
-        notifyObservers();
+        notifyListener();
+    }
+
+    public void addCallback(Runnable runnable) {
+        this.runnable = runnable;
+        notifyListener();
+    }
+
+    private void notifyListener() {
+        if (runnable != null) runnable.run();
     }
 
     public String toString() {
