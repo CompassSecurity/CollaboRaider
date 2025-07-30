@@ -73,7 +73,7 @@ public class Extension implements BurpExtension {
 
             JOptionPane.showOptionDialog(montoyaApi.userInterface().swingUtils().suiteFrame(),
                                          errorMessage,
-                                         "Collaborator Unavailable",
+                                         name + ": Collaborator Unavailable",
                                          JOptionPane.DEFAULT_OPTION,
                                          JOptionPane.ERROR_MESSAGE,
                                          null,
@@ -94,7 +94,7 @@ public class Extension implements BurpExtension {
             montoyaApi.logging().logToOutput(errorMessage);
             JOptionPane.showOptionDialog(montoyaApi.userInterface().swingUtils().suiteFrame(),
                                          errorMessage,
-                                         "Connection error",
+                                         name + ": Connection error",
                                          JOptionPane.DEFAULT_OPTION,
                                          JOptionPane.ERROR_MESSAGE,
                                          null,
