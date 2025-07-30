@@ -38,6 +38,7 @@ public class BackgroundPoll {
     public void start() {
         scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
         schedule = scheduledThreadPoolExecutor.scheduleAtFixedRate(this::execute, 0, pollingInterval, TimeUnit.SECONDS);
+        logging.logToOutput("Start polling every %d seconds.".formatted(pollingInterval));
     }
 
     public void stop() {
