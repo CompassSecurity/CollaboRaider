@@ -21,7 +21,7 @@
 #header,Origin,https://%o.%s
 header,Contact,root@%s
 header,From,root@%s
-header,User-Agent,Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/314.15 (KHTML, like Gecko) Chrome/31.4.1592.65 Safari/314.15 <img src="//%s">
+header,User-Agent,Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/314.15 (KHTML, like Gecko) Chrome/31.4.1592.65 Safari/314.15 <img src="https://%s">
 ; %r is replaced with the Referer header
 #header,Referer,https://%r.%s
 header,X-Original-URL,https://%s/
