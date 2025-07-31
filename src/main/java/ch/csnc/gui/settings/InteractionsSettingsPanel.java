@@ -84,46 +84,58 @@ public class InteractionsSettingsPanel extends AbstractSettingsPanel {
         });
 
         // Assemble layout
+
+        // First row: Action for own IP
         add(actionsLabel,
             new GBC(0, 0)
                     .setMargin(0, 0, bottomMarginInGroup, 0));
+
         add(continueButton,
             new GBC(0, 1)
                     .setWeights(0, 1)
                     .setSize(1, 2)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));
+
         add(reduceButton,
             new GBC(1, 1)
                     .setWeights(0, 1)
                     .setSize(1, 2)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));
+
         add(dropButton,
             new GBC(2, 1)
                     .setWeights(0, 1)
                     .setSize(1, 2)
                     .setMargin(0, leftMargin, bottomMargin, 0));
 
+        // Second row: Severity ratings
         add(severityLabel,
             new GBC(3, 0)
                     .setWeights(1, 0)
                     .setMargin(0, 0, bottomMarginInGroup, 0));
+
         add(severityDNSLabel,
             new GBC(3, 1)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));
+
         add(severityDNS,
             new GBC(3, 2)
                     .setWeights(0, 1)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));
+
         add(severityHTTPLabel,
             new GBC(4, 1)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));
+
         add(severityHTTP,
             new GBC(4, 2)
                     .setWeights(0, 1)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));
+
         add(severitySMTPLabel,
             new GBC(5, 1)
                     .setMargin(0, leftMargin, bottomMarginInGroup, 0));
+
         add(severitySMTP,
             new GBC(5, 2)
                     .setWeights(0, 1)

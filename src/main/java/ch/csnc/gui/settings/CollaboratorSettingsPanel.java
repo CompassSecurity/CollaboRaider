@@ -43,6 +43,12 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
             }
         });
 
+        // Create new panel to combine spinner and note label
+        JPanel intervalPanel = new JPanel();
+        intervalPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
+        intervalPanel.add(pollingIntervalSpinner);
+        intervalPanel.add(pollingIntervalChangedLabel);
+
         // Collaborator server info
         String serverTooltip = "Address of the Collaborator server that is currently in use.";
         JLabel serverLabel = new JLabel("Collaborator server");
@@ -74,33 +80,27 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
 
         // First row: polling interval
         add(pollingIntervalLabel, new GBC(0, 0)
-                .setMargin(0, 0, 15, 0));
+                .setMargin(0, 0, bottomMargin, 0));
 
-        JPanel intervalPanel = new JPanel();
-        intervalPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
-        intervalPanel.add(pollingIntervalSpinner);
-        intervalPanel.add(pollingIntervalChangedLabel);
         add(intervalPanel, new GBC(0, 1)
-                .setMargin(0, leftMargin, 15, 0)
+                .setMargin(0, leftMargin, bottomMargin, 0)
                 .setWeights(0, 1));
 
 
         // Second row: server address
         add(serverLabel, new GBC(2, 0)
-                .setMargin(0, 0, 15, 0));
+                .setMargin(0, 0, bottomMargin, 0));
 
         add(serverAddress, new GBC(2, 1)
-                .setMargin(0, leftMargin, 15, 0));
+                .setMargin(0, leftMargin, bottomMargin, 0));
 
 
         // Third row: observed IP addresses
         add(ipLabel, new GBC(3, 0)
-                .setMargin(0, 0, 5, 0));
-
+                .setMargin(0, 0, bottomMarginInGroup, 0));
 
         add(ipListLabel, new GBC(3, 1)
-                .setMargin(0, leftMargin, 5, 0));
-
+                .setMargin(0, leftMargin, bottomMarginInGroup, 0));
 
         add(ipRefreshButton, new GBC(4, 1)
                 .setMargin(0, leftMargin, 0, 0)
