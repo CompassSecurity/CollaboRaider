@@ -123,7 +123,7 @@ public class SettingsModel {
             return AuditIssueSeverity.valueOf(preferences.getString(PREFERENCES_KEY_SEVERITY_HTTP));
         } else {
             // Default value
-            return AuditIssueSeverity.MEDIUM;
+            return AuditIssueSeverity.HIGH;
         }
     }
 
