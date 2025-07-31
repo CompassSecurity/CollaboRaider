@@ -10,18 +10,16 @@ import java.util.List;
 import java.util.Scanner;
 
 public class PayloadsTableModel extends AbstractTableModel {
-    private List<Payload> payloads;
-
     private final String[] columnNames = {
             "Active?",
             "Payload type",
             "Field name",
             "Payload value"
     };
-
     private final String KEY_NUM_ROWS = "PREFERENCES_KEY_PAYLOADS_NUM_ROWS";
     private final String KEY_ROW = "PREFERENCES_KEY_PAYLOADS_ROW_";
     private final Preferences preferences;
+    private List<Payload> payloads;
 
     /**
      * Initialize the TableModel by either loading the specified payloads from settings

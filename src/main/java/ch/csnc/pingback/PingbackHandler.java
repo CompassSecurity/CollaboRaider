@@ -4,14 +4,12 @@ import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.collaborator.Interaction;
 import burp.api.montoya.collaborator.InteractionType;
 import burp.api.montoya.proxy.ProxyHttpRequestResponse;
-import burp.api.montoya.scanner.audit.issues.AuditIssue;
 import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
 import ch.csnc.Extension;
 import ch.csnc.settings.SettingsModel;
 
 import java.util.List;
 import java.util.Objects;
-
 
 
 public class PingbackHandler {

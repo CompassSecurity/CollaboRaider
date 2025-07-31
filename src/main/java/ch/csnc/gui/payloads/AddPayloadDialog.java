@@ -93,29 +93,30 @@ public class AddPayloadDialog extends JDialog {
 
         // Helper text
         String labelText = """
-        <html>
-        Use <tt>%%s</tt> as a placeholder for a generated Collaborator URL:
-        <br>
-        eg. <tt>http://%%s/file.xml</tt>
-        becomes <tt>http://%s/file.xml.</tt>
-        
-        <br><br>
-        
-        Use <tt>%%h</tt> as a placeholder for the Host header of the original request.
-        <br>
-        For example, if the original request contains the header <tt>Host: example.com</tt>,
-        then the payload <tt>%%h:%%s</tt> will become <tt>example.com:%s</tt>.
-        
-        <br><br>
-        
-        Similarly, the placeholder <tt>%%o</tt> can be used for the Origin header, and <tt>%%r</tt> for the Referer header.
-        
-        <br><br>
-        
-        Note that a payload using the <tt>%%o</tt> placeholder is only inserted if an Origin is present in the original request. 
-        The same holds for the <tt>%%r</tt> placeholder and the Referer header. 
-        </html>
-        """.formatted(settingsModel.getCheckIpPayload().toString(), settingsModel.getCheckIpPayload().toString());
+                           <html>
+                           Use <tt>%%s</tt> as a placeholder for a generated Collaborator URL:
+                           <br>
+                           eg. <tt>http://%%s/file.xml</tt>
+                           becomes <tt>http://%s/file.xml.</tt>
+                           
+                           <br><br>
+                           
+                           Use <tt>%%h</tt> as a placeholder for the Host header of the original request.
+                           <br>
+                           For example, if the original request contains the header <tt>Host: example.com</tt>,
+                           then the payload <tt>%%h:%%s</tt> will become <tt>example.com:%s</tt>.
+                           
+                           <br><br>
+                           
+                           Similarly, the placeholder <tt>%%o</tt> can be used for the Origin header, and <tt>%%r</tt> for the Referer header.
+                           
+                           <br><br>
+                           
+                           Note that a payload using the <tt>%%o</tt> placeholder is only inserted if an Origin is present in the original request. 
+                           The same holds for the <tt>%%r</tt> placeholder and the Referer header. 
+                           </html>
+                           """.formatted(settingsModel.getCheckIpPayload().toString(),
+                                         settingsModel.getCheckIpPayload().toString());
         JLabel infoLabel = new JLabel(labelText);
         infoLabel.putClientProperty("html.disable", null);
         infoLabel.setToolTipText("got it?");
@@ -232,10 +233,10 @@ public class AddPayloadDialog extends JDialog {
 
         // Apply payload replacement rules with test data
         value = value
-                  .replace("%s", settingsModel.getCheckIpPayload().toString())
-                  .replace("%h", "examplehost.com")
-                  .replace("%o", "exampleorigin.com")
-                  .replace("%r", "https://examplereferer.com/page");
+                .replace("%s", settingsModel.getCheckIpPayload().toString())
+                .replace("%h", "examplehost.com")
+                .replace("%o", "exampleorigin.com")
+                .replace("%r", "https://examplereferer.com/page");
 
         String output = "%s%s%s".formatted(key, separator, value);
         previewText.setText(output);

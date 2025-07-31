@@ -41,6 +41,7 @@ public class ExportSettingsPanel extends AbstractSettingsPanel {
         add(importButton,
             new GBC(1, 0)
                     .fill(GBC.HORIZONTAL));
+
         // Introduce another column so that both buttons can have the same width without filling the entire window
         exportLabel = new JLabel("");
         importlabel = new JLabel("");

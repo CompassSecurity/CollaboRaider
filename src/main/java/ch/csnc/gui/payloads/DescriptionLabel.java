@@ -11,7 +11,6 @@ public class DescriptionLabel extends JLabel {
 
         // Explicitly allow HTML content
         putClientProperty("html.disable", null);
-        // descriptionLabel.setContentType("text/html");
 
         setText("""
                 <html>

@@ -23,6 +23,7 @@ public class DetailsPane extends JTabbedPane {
 
 
     TabController tabController;
+
     public DetailsPane(TabController tabController) {
         super();
         this.tabController = tabController;
@@ -36,7 +37,9 @@ public class DetailsPane extends JTabbedPane {
         collaboratorHTTPRequestViewer = userInterface.createHttpRequestEditor(EditorOptions.READ_ONLY);
         collaboratorHTTPResponseViewer = userInterface.createHttpResponseEditor(EditorOptions.READ_ONLY);
 
-        collaboratorDNSViewer = userInterface.createWebSocketMessageEditor(EditorOptions.READ_ONLY, EditorOptions.SHOW_NON_PRINTABLE_CHARACTERS, EditorOptions.WRAP_LINES);
+        collaboratorDNSViewer = userInterface.createWebSocketMessageEditor(EditorOptions.READ_ONLY,
+                                                                           EditorOptions.SHOW_NON_PRINTABLE_CHARACTERS,
+                                                                           EditorOptions.WRAP_LINES);
 
         collaboratorSMTPViewer = userInterface.createRawEditor(EditorOptions.READ_ONLY, EditorOptions.WRAP_LINES);
 
@@ -62,7 +65,7 @@ public class DetailsPane extends JTabbedPane {
             // Store index of current tab for this interaction type
             lastTabActive.put(previousType, getSelectedIndex());
 
-            for (int i = getTabCount()-1; i>2; i--) {
+            for (int i = getTabCount() - 1; i > 2; i--) {
                 removeTabAt(i);
             }
 
@@ -83,8 +86,14 @@ public class DetailsPane extends JTabbedPane {
 
         // Show details for HTTP pingback
         if (pingback.interaction.httpDetails().isPresent()) {
-            collaboratorHTTPRequestViewer.setRequest(pingback.interaction.httpDetails().get().requestResponse().request());
-            collaboratorHTTPResponseViewer.setResponse(pingback.interaction.httpDetails().get().requestResponse().response());
+            collaboratorHTTPRequestViewer.setRequest(pingback.interaction.httpDetails()
+                                                                         .get()
+                                                                         .requestResponse()
+                                                                         .request());
+            collaboratorHTTPResponseViewer.setResponse(pingback.interaction.httpDetails()
+                                                                           .get()
+                                                                           .requestResponse()
+                                                                           .response());
         }
 
         // Show details for DNS pingback
@@ -94,7 +103,9 @@ public class DetailsPane extends JTabbedPane {
 
         // Show details for SMTP pingback
         else if (pingback.interaction.smtpDetails().isPresent()) {
-            collaboratorSMTPViewer.setContents(ByteArray.byteArray(pingback.interaction.smtpDetails().get().conversation()));
+            collaboratorSMTPViewer.setContents(ByteArray.byteArray(pingback.interaction.smtpDetails()
+                                                                                       .get()
+                                                                                       .conversation()));
         }
     }
 }

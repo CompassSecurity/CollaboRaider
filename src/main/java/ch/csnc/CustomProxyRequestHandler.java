@@ -11,7 +11,6 @@ import burp.api.montoya.proxy.http.ProxyRequestToBeSentAction;
 import ch.csnc.payload.Payload;
 import ch.csnc.payload.PayloadsTableModel;
 
-import java.util.*;
 
 public class CustomProxyRequestHandler implements ProxyRequestHandler {
     private final Logging logging;

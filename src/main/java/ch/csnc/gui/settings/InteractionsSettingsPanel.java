@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 public class InteractionsSettingsPanel extends AbstractSettingsPanel {
-    int test = 0;
 
     public InteractionsSettingsPanel(SettingsModel settingsModel) {
         // Set title and create basic constraints

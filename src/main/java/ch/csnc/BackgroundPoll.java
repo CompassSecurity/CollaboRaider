@@ -14,11 +14,14 @@ public class BackgroundPoll {
     private final CollaboratorClient collaboratorClient;
     private final Logging logging;
     private final PingbackHandler pingbackHandler;
+    private final int pollingInterval;
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
     private ScheduledFuture<?> schedule;
-    private final int pollingInterval;
 
-    public BackgroundPoll(CollaboratorClient collaboratorClient, Logging logging, PingbackHandler pingbackHandler, int pollingInterval) {
+    public BackgroundPoll(CollaboratorClient collaboratorClient,
+                          Logging logging,
+                          PingbackHandler pingbackHandler,
+                          int pollingInterval) {
         this.collaboratorClient = collaboratorClient;
         this.logging = logging;
         this.pingbackHandler = pingbackHandler;

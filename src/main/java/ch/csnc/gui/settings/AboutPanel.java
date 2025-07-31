@@ -1,6 +1,5 @@
 package ch.csnc.gui.settings;
 
-import ch.csnc.Extension;
 import ch.csnc.gui.GBC;
 import ch.csnc.settings.SettingsModel;
 

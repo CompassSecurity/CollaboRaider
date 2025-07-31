@@ -74,8 +74,7 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
 
         // First row: polling interval
         add(pollingIntervalLabel, new GBC(0, 0)
-                .setMargin(0, 0, 15, 0)
-        );
+                .setMargin(0, 0, 15, 0));
 
         JPanel intervalPanel = new JPanel();
         intervalPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
@@ -83,8 +82,7 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
         intervalPanel.add(pollingIntervalChangedLabel);
         add(intervalPanel, new GBC(0, 1)
                 .setMargin(0, leftMargin, 15, 0)
-                .setWeights(0, 1)
-        );
+                .setWeights(0, 1));
 
 
         // Second row: server address
@@ -106,7 +104,7 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
 
         add(ipRefreshButton, new GBC(4, 1)
                 .setMargin(0, leftMargin, 0, 0)
-                .setWeights(1,1));
+                .setWeights(1, 1));
 
     }
 }

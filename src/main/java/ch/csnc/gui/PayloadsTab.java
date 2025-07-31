@@ -38,11 +38,11 @@ public class PayloadsTab extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
 
         JPanel buttonPanel = new ButtonPanel(this::onClickAddButton
-                                             , this::onClickRemoveButton
-                                             , this::onClickImportButton
-                                             , this::onClickExportButton
-                                             , this::onClickRestoreButton
-                                             );
+                , this::onClickRemoveButton
+                , this::onClickImportButton
+                , this::onClickExportButton
+                , this::onClickRestoreButton
+        );
         JScrollPane tablePanel = createTablePanel();
         JLabel descriptionLabel = new DescriptionLabel(settingsModel);
 
@@ -125,8 +125,7 @@ public class PayloadsTab extends JPanel {
                 payloadsTableModel.loadStoredPayloads(inputStream);
                 payloadsTableModel.fireTableDataChanged();
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(suiteFrame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
@@ -173,7 +172,7 @@ public class PayloadsTab extends JPanel {
 
 
     private JScrollPane createTablePanel() {
-        table = new JTable(payloadsTableModel){
+        table = new JTable(payloadsTableModel) {
 
             // Implement custom table cell tool tips
             public String getToolTipText(MouseEvent e) {
@@ -219,7 +218,8 @@ public class PayloadsTab extends JPanel {
 
         // Create a dummy table and use its CellRenderer
         JTable dummyTable = new JTable();
-        DefaultTableCellRenderer leftRenderer = (DefaultTableCellRenderer) dummyTable.getTableHeader().getDefaultRenderer();
+        DefaultTableCellRenderer leftRenderer = (DefaultTableCellRenderer) dummyTable.getTableHeader()
+                                                                                     .getDefaultRenderer();
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 
         TableColumn column1 = table.getColumnModel().getColumn(0);

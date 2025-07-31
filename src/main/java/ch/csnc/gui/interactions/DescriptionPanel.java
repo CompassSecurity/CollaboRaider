@@ -12,7 +12,7 @@ public class DescriptionPanel extends JPanel {
         textPane.putClientProperty("html.disable", null);
         textPane.setContentType("text/html");
         textPane.setText("<html><p>Placeholder.</p></html>");
-        textPane.setMargin(new Insets(10,10,10,10));
+        textPane.setMargin(new Insets(10, 10, 10, 10));
         setOpaque(false);
 
         setLayout(new GridBagLayout());

@@ -6,8 +6,8 @@ import java.awt.*;
 public class ButtonPanel extends JPanel {
     public ButtonPanel(Runnable onClickAddButton
             , Runnable onClickRemoveButton
-            //, Runnable onClickUpButton,
-            //, Runnable onClickDownButton,
+                       //, Runnable onClickUpButton,
+                       //, Runnable onClickDownButton,
             , Runnable onClickImportButton
             , Runnable onClickExportButton
             , Runnable onClickRestoreButton
