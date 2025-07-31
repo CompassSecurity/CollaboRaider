@@ -4,7 +4,6 @@ import ch.csnc.gui.GBC;
 import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
     public CollaboratorSettingsPanel(SettingsModel settingsModel) {
@@ -20,7 +19,7 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
         JLabel pollingIntervalChangedLabel = new JLabel("""
                                                         <html>
                                                         <i style="color:blue;">
-                                                        &nbsp;&nbsp;The new interval will take effect after reloading the extension.
+                                                        The new interval will take effect after reloading the extension.
                                                         </i>
                                                         </html>
                                                         """);
@@ -42,12 +41,6 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
                 pollingIntervalChangedLabel.setVisible(true);
             }
         });
-
-        // Create new panel to combine spinner and note label
-        JPanel intervalPanel = new JPanel();
-        intervalPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
-        intervalPanel.add(pollingIntervalSpinner);
-        intervalPanel.add(pollingIntervalChangedLabel);
 
         // Collaborator server info
         String serverTooltip = "Address of the Collaborator server that is currently in use.";
@@ -79,32 +72,47 @@ public class CollaboratorSettingsPanel extends AbstractSettingsPanel {
         // Assemble layout
 
         // First row: polling interval
-        add(pollingIntervalLabel, new GBC(0, 0)
-                .setMargin(0, 0, bottomMargin, 0));
+        add(pollingIntervalLabel,
+            new GBC(0, 0)
+                    .setMargin(0, 0, bottomMargin, 0));
 
-        add(intervalPanel, new GBC(0, 1)
-                .setMargin(0, leftMargin, bottomMargin, 0)
-                .setWeights(0, 1));
+        add(pollingIntervalSpinner,
+            new GBC(0, 1)
+                    .setMargin(0, leftMargin, bottomMargin, 0));
+
+
+        add(pollingIntervalChangedLabel,
+            new GBC(0, 2)
+                    .setMargin(0, leftMargin, bottomMargin, 0)
+                    .setWeights(0, 1));
 
 
         // Second row: server address
-        add(serverLabel, new GBC(2, 0)
-                .setMargin(0, 0, bottomMargin, 0));
+        add(serverLabel,
+            new GBC(2, 0)
+                    .setMargin(0, 0, bottomMargin, 0));
 
-        add(serverAddress, new GBC(2, 1)
-                .setMargin(0, leftMargin, bottomMargin, 0));
+        add(serverAddress,
+            new GBC(2, 1)
+                    .setMargin(0, leftMargin, bottomMargin, 0));
 
 
         // Third row: observed IP addresses
-        add(ipLabel, new GBC(3, 0)
-                .setMargin(0, 0, bottomMarginInGroup, 0));
+        add(ipLabel,
+            new GBC(3, 0)
+                    .setMargin(0, 0, bottomMarginInGroup, 0));
 
-        add(ipListLabel, new GBC(3, 1)
-                .setMargin(0, leftMargin, bottomMarginInGroup, 0));
+        add(ipListLabel,
+            new GBC(3, 1)
+                    .setWeights(0, 1)
+                    .setSize(1, 2)
+                    .setMargin(0, leftMargin, bottomMarginInGroup, 0));
 
-        add(ipRefreshButton, new GBC(4, 1)
-                .setMargin(0, leftMargin, 0, 0)
-                .setWeights(1, 1));
+        add(ipRefreshButton,
+            new GBC(4, 1)
+                    .setMargin(0, leftMargin, 0, 0)
+                    .setSize(1, 2)
+                    .setWeights(1, 1));
 
     }
 }
