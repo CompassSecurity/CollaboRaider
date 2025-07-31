@@ -290,7 +290,7 @@ public class Pingback {
                     .formatted(interaction.dnsDetails().get().queryType().name());
             // TODO: Parse raw DNS query to get more info
             String rawRequest = Utils.sanitize(interaction.dnsDetails().get().query().toString());
-            data += "Raw query: <br><pre>%s</pre><br>".formatted(rawRequest);
+            data += "Raw query data: <pre>%s</pre><br>".formatted(rawRequest);
         }
 
         // HTTP details
@@ -299,7 +299,7 @@ public class Pingback {
             data += "Protocol: %s<br>"
                     .formatted(interaction.httpDetails().get().protocol().name());
             String rawRequest = Utils.sanitize(interaction.httpDetails().get().requestResponse().request().toString());
-            data += "Request: <pre>%s</pre><br>"
+            data += "Request: <pre>%s</pre>"
                     .formatted(rawRequest);
         }
 
@@ -310,14 +310,14 @@ public class Pingback {
                     .formatted(interaction.smtpDetails().get().protocol().name());
             // TODO: Parse SMTP conversation to get more info
             String rawRequest = Utils.sanitize(interaction.smtpDetails().get().conversation());
-            data += "SMTP Conversation:<br><pre>%s</pre><br>"
+            data += "SMTP Conversation: <pre>%s</pre><br>"
                     .formatted(rawRequest);
         }
 
         // Show custom data (if it exists)
         if (interaction.customData().isPresent()) {
             data += "<b>Custom Data:</b><br>";
-            data += "%s<br>"
+            data += "<pre>%s</pre>"
                     .formatted(interaction.customData().get());
         }
 
