@@ -34,8 +34,8 @@ public class SettingsTab extends JPanel {
 
         // not yet implemented
         // TODO: add import/export functionality
-        // gbc.gridy++;
-        // add(new ExportSettingsPanel(settingsModel), gbc);
+        gbc.gridy++;
+        add(new ExportSettingsPanel(settingsModel), gbc);
 
         gbc.gridy++;
         gbc.weighty = 1; // Add weight to last element so that everything is shifted towards the anchor point
