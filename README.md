@@ -25,10 +25,18 @@ New features:
 - The extension is based on the new Montoya API.
 
 # Installation
+
+## Build
+To build the extension run
+```shell
+./gradlew jar
+```
+
 ## Manual Installation
 In Burp Suite, open the `Extensions` tab and navigate to the `Installed` sub-tab. There, select the extension type `Java` and select the Jar file.
+
 ## From BApp Store
-hopefully coming soon...
+[https://portswigger.net/bappstore/2495f6fb364d48c3b6c984e226c02968](https://portswigger.net/bappstore/2495f6fb364d48c3b6c984e226c02968)
 
 # Usage
 ## Issues
