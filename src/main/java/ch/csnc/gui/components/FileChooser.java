@@ -11,6 +11,7 @@ public class FileChooser extends JFileChooser {
         super();
         this.parentComponent = parentComponent;
     }
+
     @Override
     public void approveSelection() {
         File f = getSelectedFile();
@@ -47,8 +48,7 @@ public class FileChooser extends JFileChooser {
         int returnVal = showOpenDialog(parentComponent);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = getSelectedFile();
-            InputStream inputStream = new FileInputStream(file);
-            return inputStream;
+            return new FileInputStream(file);
         }
         return null;
     }

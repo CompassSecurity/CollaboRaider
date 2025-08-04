@@ -11,6 +11,7 @@ import ch.csnc.settings.SettingsModel;
 import java.util.List;
 import java.util.Objects;
 
+
 public class PingbackHandler {
     private final MontoyaApi montoyaApi;
     private final PingbackTableModel tableModel;
@@ -43,24 +44,32 @@ public class PingbackHandler {
         }
 
         // Search for all occurrences of the collaborator ID that caused this interaction
+        // Exclude direct requests to the Collaborator server to avoid additional issues
         List<ProxyHttpRequestResponse> proxyList = montoyaApi.proxy()
                                                              .history(requestResponse ->
                                                                               requestResponse.finalRequest()
                                                                                              .toString()
                                                                                              .contains(interaction.id()
-                                                                                                                  .toString()));
+                                                                                                                  .toString())
+                                                                              && !requestResponse.finalRequest()
+                                                                                                 .httpService()
+                                                                                                 .host().toLowerCase()
+                                                                                                 .endsWith(settings.getCollaboratorAddress())
+                                                             );
 
         // Log to output
+        // Since a random Collaborator ID is used in every request, there should be only one interaction.
+        // If not, something probably went wrong.
         montoyaApi.logging()
                   .logToOutput(String.format(
-                          "Got interaction %s (%s) from IP %s. Found %d corresponding response%s.",
+                          "Got interaction %s (%s) from IP %s. %s",
                           interaction.type().name(),
                           interaction.id(),
                           interaction.clientIp().getHostAddress(),
-                          proxyList.size(),
-                          (proxyList.size() == 1) ? "" : "s"));
+                          (proxyList.size() == 1) ? "" : "Found %d corresponding responses!".formatted(proxyList.size())));
 
         // Process each request
+        // Since a random ID is generated for every request and payload, the list should always contain only one item
         for (ProxyHttpRequestResponse item : proxyList) {
             processInteractionWithProxyItem(interaction, item);
         }
@@ -68,7 +77,6 @@ public class PingbackHandler {
     }
 
     private void processInteractionWithProxyItem(Interaction interaction, ProxyHttpRequestResponse item) {
-
         // Check if this pingback came from own IP
         boolean fromOwnIP = settings.getOwnIPAddresses().contains(interaction.clientIp().getHostAddress());
         // If setting is enabled, ignore this request

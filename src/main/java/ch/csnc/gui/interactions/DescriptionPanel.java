@@ -3,19 +3,16 @@ package ch.csnc.gui.interactions;
 import javax.swing.*;
 import java.awt.*;
 
-public class DescriptionViewer extends JPanel {
+public class DescriptionPanel extends JPanel {
     JTextPane textPane;
 
-    public DescriptionViewer() {
-        String htmlText = "<html><h1>Hello, World!</h1><p>This is a <b>JTextPane</b> with <i>HTML</i> content.</p></html>";
+    public DescriptionPanel() {
         textPane = new JTextPane();
-        textPane.setContentType("text/html");
-        textPane.setText(htmlText);
-
-        textPane.setMargin(new Insets(10,10,10,10));
-
         // Explicitly allow HTML content
         textPane.putClientProperty("html.disable", null);
+        textPane.setContentType("text/html");
+        textPane.setText("<html><p>Placeholder.</p></html>");
+        textPane.setMargin(new Insets(10, 10, 10, 10));
         setOpaque(false);
 
         setLayout(new GridBagLayout());

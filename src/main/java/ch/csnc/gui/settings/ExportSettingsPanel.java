@@ -7,17 +7,17 @@ import ch.csnc.settings.SettingsModel;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class ExportSettingsPanel extends AbstractSettingsPanel {
     JLabel exportLabel, importlabel;
     FileChooser fileChooser;
+    SettingsModel settingsModel;
 
     public ExportSettingsPanel(SettingsModel settingsModel) {
         super("Import / Export Settings");
+
+        this.settingsModel = settingsModel;
 
         // Create buttons
         JButton importButton = new JButton("Import settings from file");
@@ -41,6 +41,7 @@ public class ExportSettingsPanel extends AbstractSettingsPanel {
         add(importButton,
             new GBC(1, 0)
                     .fill(GBC.HORIZONTAL));
+
         // Introduce another column so that both buttons can have the same width without filling the entire window
         exportLabel = new JLabel("");
         importlabel = new JLabel("");
@@ -59,7 +60,8 @@ public class ExportSettingsPanel extends AbstractSettingsPanel {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                writer.write("Hello from Burp");
+                String settings = settingsModel.serialize();
+                writer.write(settings);
                 exportLabel.setText("Exported to " + file.getAbsolutePath());
             } catch (IOException e1) {
                 exportLabel.setText("Export to file %s failed.".formatted(file.getAbsolutePath()));
@@ -74,7 +76,24 @@ public class ExportSettingsPanel extends AbstractSettingsPanel {
         int returnVal = fileChooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
-            importlabel.setText("Imported from file %s".formatted(file.getAbsolutePath()));
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                StringBuilder stringBuilder = new StringBuilder();
+                String line = reader.readLine();
+
+                while (line != null) {
+                    stringBuilder.append(line);
+                    stringBuilder.append(System.lineSeparator());
+                    line = reader.readLine();
+                }
+
+                settingsModel.fromJson(stringBuilder.toString());
+                importlabel.setText("Imported from file %s".formatted(file.getAbsolutePath()));
+            }  catch (IOException ex) {
+                ex.printStackTrace();
+                importlabel.setText("Import from file %s failed.".formatted(file.getAbsolutePath()));
+            }
+        } else {
+            importlabel.setText("");
         }
     }
 }

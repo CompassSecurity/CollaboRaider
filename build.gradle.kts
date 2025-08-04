@@ -2,7 +2,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 // Specify current version of the extension
-version = "2.0.1"
+version = "2.0.2"
 
 plugins {
     id("java")
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.portswigger.burp.extensions:montoya-api:2025.2")
+    compileOnly("net.portswigger.burp.extensions:montoya-api:2025.7")
 }
 
 tasks.jar {

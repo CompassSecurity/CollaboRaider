@@ -1,10 +1,10 @@
 package ch.csnc.gui.settings;
 
 import burp.api.montoya.core.HighlightColor;
+import ch.csnc.gui.GBC;
 import ch.csnc.settings.SettingsModel;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class ProxySettingsPanel extends AbstractSettingsPanel {
     public ProxySettingsPanel(SettingsModel settingsModel) {
@@ -25,28 +25,28 @@ public class ProxySettingsPanel extends AbstractSettingsPanel {
         });
 
         // Comments
-        String commentCheckBoxTooltip = "Add comment to request that caused a pingback in the Proxy tab.";
+        String commentCheckBoxTooltip = "Add comment to requests that caused a pingback in the Proxy tab.";
         JCheckBox commentCheckBox = new JCheckBox("Mark requests with comment");
         commentCheckBox.setSelected(settingsModel.getCommentsEnabled());
         commentCheckBox.addActionListener(e -> settingsModel.setCommentsEnabled(commentCheckBox.isSelected()));
         commentCheckBox.setToolTipText(commentCheckBoxTooltip);
 
         // Assemble layout
-        gbc.gridy = 0;
-        gbc.gridx = 0;
-        gbc.insets = new Insets(0, 0, bottomMargin, 0);
-        add(highlightColorLabel, gbc);
 
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        gbc.insets = new Insets(0, leftMargin, bottomMargin, 0);
-        add(highlightColorSelector, gbc);
+        // First row: highlight color
+        add(highlightColorLabel,
+            new GBC(0, 0)
+                    .setMargin(0, 0, bottomMargin, 0));
 
-        gbc.gridy = 2;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        gbc.weighty = 1;
-        gbc.insets = new Insets(0, 0, 0, 0);
-        add(commentCheckBox, gbc);
+        add(highlightColorSelector,
+            new GBC(0, 1)
+                    .setWeights(0, 1)
+                    .setMargin(0, leftMargin, bottomMargin, 0));
+
+        // Second row: comment checkbox
+        add(commentCheckBox,
+            new GBC(1, 0)
+                    .setSize(1, 2)
+                    .setWeights(1, 1));
     }
 }

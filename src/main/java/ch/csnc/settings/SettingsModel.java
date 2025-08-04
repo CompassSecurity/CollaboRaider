@@ -8,30 +8,26 @@ import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.persistence.PersistedObject;
 import burp.api.montoya.persistence.Preferences;
 import burp.api.montoya.scanner.audit.issues.AuditIssueSeverity;
+import burp.api.montoya.utilities.json.*;
+
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class SettingsModel {
-    // Collaborator Client Polling Interval
     private final String PREFERENCES_KEY_POLLING_INTERVAL = "pollingInterval";
-    // Burp Proxy highlight color
     private final String PREFERENCES_KEY_PROXY_HIGHLIGHT_COLOR = "proxyHighlightColor";
-    // Burp Proxy annotate request with comment
     private final String PREFERENCES_KEY_ENABLE_COMMENTS = "enableComments";
-    // Action if pingback came from own IP
     private final String PREFERENCES_KEY_ACTION_FOR_OWN_IP = "actionForOwnIP";
-    // Severity rating for DNS pingback
     private final String PREFERENCES_KEY_SEVERITY_DNS = "pingbackSeverityDNS";
     private final String PREFERENCES_KEY_SEVERITY_HTTP = "pingbackSeverityHTTP";
     private final String PREFERENCES_KEY_SEVERITY_SMTP = "pingbackSeveritySMTP";
-    // Save Collaborator secret key with project
     private final String KEY_COLLABORATOR_SECRET = "persistent_collaborator_secret_key";
+
     private final MontoyaApi montoyaApi;
     private final Preferences preferences;
     private final PersistedObject persistedObject;
-    // Store own IP addresses discovered at startup
     private final OwnIPAddresses ownIPAddresses = new OwnIPAddresses();
-    // Collaborator client
     private CollaboratorClient collaboratorClient;
-    // Collaborator payload that is sent to determine the system's own external IP
     private CollaboratorPayload checkIpPayload;
     private String buildTime, version;
 
@@ -123,7 +119,7 @@ public class SettingsModel {
             return AuditIssueSeverity.valueOf(preferences.getString(PREFERENCES_KEY_SEVERITY_HTTP));
         } else {
             // Default value
-            return AuditIssueSeverity.MEDIUM;
+            return AuditIssueSeverity.HIGH;
         }
     }
 
@@ -154,16 +150,20 @@ public class SettingsModel {
 
     public void sendCheckIpPayload() {
         ownIPAddresses.init();
-            checkIpPayload = collaboratorClient.generatePayload();
-            String collaboratorURL = "http://" + checkIpPayload.toString();
-            HttpRequest checkIPRequest = HttpRequest.httpRequestFromUrl(collaboratorURL);
+        checkIpPayload = collaboratorClient.generatePayload();
+        String collaboratorURL = "https://" + checkIpPayload.toString();
+        HttpRequest checkIPRequest = HttpRequest.httpRequestFromUrl(collaboratorURL);
 
-            montoyaApi.logging().logToOutput("Sending request to " + collaboratorURL);
-            montoyaApi.http().sendRequest(checkIPRequest);
+        montoyaApi.logging().logToOutput("Sending initial request to " + collaboratorURL);
+        montoyaApi.http().sendRequest(checkIPRequest);
     }
 
     public void addCollaboratorClient(CollaboratorClient collaboratorClient) {
         this.collaboratorClient = collaboratorClient;
+    }
+
+    public String getCollaboratorAddress() {
+        return this.collaboratorClient.server().address().toLowerCase();
     }
 
     public String getBuildTime() {
@@ -180,6 +180,50 @@ public class SettingsModel {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String serialize() {
+        JsonObjectNode jsonObject = JsonObjectNode.jsonObjectNode();
+        jsonObject.putNumber(PREFERENCES_KEY_POLLING_INTERVAL, getCollaboratorPollingInterval());
+        jsonObject.putString(PREFERENCES_KEY_PROXY_HIGHLIGHT_COLOR, getProxyHighlightColor().name());
+        jsonObject.putBoolean(PREFERENCES_KEY_ENABLE_COMMENTS, getCommentsEnabled());
+        jsonObject.putString(PREFERENCES_KEY_ACTION_FOR_OWN_IP, getActionForOwnIP().name());
+        jsonObject.putString(PREFERENCES_KEY_SEVERITY_DNS, getPingbackSeverityDNS().name());
+        jsonObject.putString(PREFERENCES_KEY_SEVERITY_HTTP, getPingbackSeverityHTTP().name());
+        jsonObject.putString(PREFERENCES_KEY_SEVERITY_SMTP, getPingbackSeveritySMTP().name());
+        return jsonObject.toJsonString();
+    }
+
+    public void fromJson(String data) {
+        JsonObjectNode jsonNode = JsonNode.jsonNode(data).asObject();
+
+        Number pollingInterval = jsonNode.getNumber(PREFERENCES_KEY_POLLING_INTERVAL);
+        if (pollingInterval != null)
+            setCollaboratorPollingInterval(pollingInterval.intValue());
+
+        String proxyHighlightColor = jsonNode.getString(PREFERENCES_KEY_PROXY_HIGHLIGHT_COLOR);
+        if (proxyHighlightColor != null)
+            setProxyHighlightColor(HighlightColor.valueOf(proxyHighlightColor));
+
+        Boolean enableComments = jsonNode.getBoolean(PREFERENCES_KEY_ENABLE_COMMENTS);
+        if (enableComments != null)
+            setCommentsEnabled(enableComments);
+
+        String actionForOwnIP = jsonNode.getString(PREFERENCES_KEY_ACTION_FOR_OWN_IP);
+        if (actionForOwnIP != null)
+            setActionForOwnIP(actionForOwnIP);
+
+        String severityDNS = jsonNode.getString(PREFERENCES_KEY_SEVERITY_DNS);
+        if (severityDNS != null)
+            setPingbackSeverityDNS(AuditIssueSeverity.valueOf(severityDNS));
+
+        String severityHTTP = jsonNode.getString(PREFERENCES_KEY_SEVERITY_HTTP);
+        if (severityHTTP != null)
+            setPingbackSeverityHTTP(AuditIssueSeverity.valueOf(severityHTTP));
+
+        String severitySMTP = jsonNode.getString(PREFERENCES_KEY_SEVERITY_SMTP);
+        if (severitySMTP != null)
+            setPingbackSeveritySMTP(AuditIssueSeverity.valueOf(severitySMTP));
     }
 
     public enum ActionForOwnIP {
