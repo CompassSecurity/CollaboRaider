@@ -127,6 +127,11 @@ public class PayloadsTableModel extends AbstractTableModel {
         payloads = new ArrayList<>(numRows);
         for (int i = 0; i < numRows; ++i) {
             String serialized = preferences.getString(KEY_ROW + i);
+
+            // Avoid null pointer exception
+            if (serialized == null)
+                continue;
+
             // logging.logToOutput("restore " + serialized);
             Payload payload = Payload.fromString(serialized);
             payloads.add(i, payload);
